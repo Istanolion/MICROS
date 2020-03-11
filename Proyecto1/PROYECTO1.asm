@@ -1,0 +1,48 @@
+	PROCESSOR 16f877
+	INCLUDE <p16f877.inc>
+	ORG 0
+dato equ H'20'; dato de salida
+REGA equ H'21'; contador loop1
+REGB equ H'22'
+REGC equ H'23'
+	GOTO inicio
+	ORG 5
+inicio: CLRF PORTB
+	BSF STATUS,RP0
+	BCF STATUS,RP1
+	MOVLW 0x00
+	MOVWF TRISB
+	BCF STATUS,RP0
+START:	MOVLW 0xF0
+	MOVWF dato
+	MOVF dato,W
+	MOVWF PORTB
+behaviour:	CALL retardo
+	INCF dato,F
+	SWAPF dato,F
+	DECF dato,F
+	SWAPF dato,F
+	MOVF dato,w
+	MOVWF PORTB
+	MOVLW 0x0F
+	SUBWF dato,w
+	BTFSS STATUS,Z
+	GOTO behaviour
+	GOTO START
+	
+retardo: MOVLW 0x1A
+	MOVWF REGC
+loop3: MOVLW 0xFA
+	MOVWF REGB
+loop2: MOVLW 0xFA
+	MOVWF REGA
+loop1: DECFSZ REGA 
+	GOTO loop1
+	DECFSZ REGB
+	GOTO loop2
+	DECFSZ REGC
+	GOTO loop3
+	RETURN
+	
+	END
+	
