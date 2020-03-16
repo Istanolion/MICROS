@@ -21,7 +21,7 @@ Primero
 Zero
 	movlw H'0'			; W <- H'0'
 	movwf resultado			; resultado <- W
-	goto Primero
+	goto $ 				; Termina Programa
 Multiplicar
 	movf multiplo1,0		; W <- multiplo1
 	addwf resultado			; resultado <- W
