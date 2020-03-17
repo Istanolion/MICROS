@@ -1,0 +1,3 @@
+Para instalar la librería solo debes copiar el archivo "extras.inc", dirigirte a la carpeta donde
+tienes instalado el Mplab y dentro de la carpeta "MPASM Suite" pegar el archivo. Finalmente en el archivo .asm
+que lo vayas usar debes agregar la linea "include<extras.inc>".

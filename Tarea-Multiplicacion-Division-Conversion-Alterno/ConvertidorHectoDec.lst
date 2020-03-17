@@ -1,0 +1,913 @@
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001                 processor 16f877
+                      00002                 include <p16f877.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+Message[301]: MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
+                      00540         LIST
+                      00003                 include <extras.inc>
+                      00001 
+                      00002 ;------------------------MANEJO REGISTROS----------------------------
+                      00003 ;--------------------------------------------------------------------
+                      00004 ;Valor a Registro
+                      00005 ;Descrp: Dar un valor directamente a un registro.
+                      00006 ;------------------------------------
+                      00007 movlf   macro   registro, valor
+                      00008                         local   INIT
+                      00009 INIT:   movlw valor
+                      00010                 movwf registro
+                      00011                 endm
+                      00012 ;------------------------------------
+                      00013 
+                      00014 ;Registro a Registro
+                      00015 ;Descrp: Mover valor de un registro a otro directamente.
+                      00016 ;------------------------------------
+                      00017 movff   macro   origen,destino
+                      00018                         local   INIT
+                      00019 INIT:   movf origen,W
+                      00020                 movwf destino
+                      00021                 endm
+                      00022 ;------------------------------------
+                      00023 ;--------------------------------------------------------------------
+                      00024 
+                      00025 
+                      00026 
+                      00027 
+                      00028 ;----------------------COMPARACIONES CON SALTO-----------------------
+                      00029 ;--------------------------------------------------------------------
+                      00030 ;Saltar si r1 MENOR que un valor
+                      00031 ;------------------------------------
+                      00032 jmenor  macro   r1,valor,destino
+                      00033                         local   INIT
+                      00034 INIT:   movlw valor
+                      00035                 subwf r1,W      
+                      00036                 btfss STATUS,C
+                      00037                 goto destino ;r1 es menor
+                      00038                 endm
+                      00039 ;------------------------------------
+                      00040 
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00041 ;Saltar si r1 MENOR que r2
+                      00042 ;------------------------------------
+                      00043 jmenorf         macro   r1,r2,destino
+                      00044                         local   INIT
+                      00045 INIT:   movf r2,W
+                      00046                 subwf r1,W      
+                      00047                 btfss STATUS,C
+                      00048                 goto destino ;r1 es menor
+                      00049                 endm
+                      00050 ;------------------------------------
+                      00051 
+                      00052 
+                      00053 ;Saltar si r1 MENOR/IGUAL que un valor
+                      00054 ;------------------------------------
+                      00055 jmenori         macro   r1,valor,destino
+                      00056                         local   INIT
+                      00057 INIT:   movlw valor
+                      00058                 subwf r1,W
+                      00059                 btfsc STATUS,Z
+                      00060                 goto destino    
+                      00061                 btfss STATUS,C
+                      00062                 goto destino ;r1 es menor
+                      00063                 endm
+                      00064 ;------------------------------------
+                      00065 
+                      00066 ;Saltar si r1 MENOR/IGUAL que r2
+                      00067 ;------------------------------------
+                      00068 jmenorif        macro   r1,r2,destino
+                      00069                         local   INIT
+                      00070 INIT:   movf r2,W
+                      00071                 subwf r1,W
+                      00072                 btfsc STATUS,Z
+                      00073                 goto destino    
+                      00074                 btfss STATUS,C
+                      00075                 goto destino ;r1 es menor
+                      00076                 endm
+                      00077 ;------------------------------------
+                      00078 
+                      00079 ;Saltar si r1 MAYOR que un valor
+                      00080 ;------------------------------------
+                      00081 jmayor  macro   r1,valor,destino
+                      00082                         local   INIT
+                      00083 INIT:   movlw valor
+                      00084                 subwf r1,W      
+                      00085                 btfsc STATUS,C
+                      00086                 goto destino ;r1 es mayor
+                      00087                 endm
+                      00088 ;------------------------------------
+                      00089 
+                      00090 ;Saltar si r1 MAYOR que r2
+                      00091 ;------------------------------------
+                      00092 jmayorf         macro   r1,r2,destino
+                      00093                         local   INIT
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00094 INIT:   movf r2,W
+                      00095                 subwf r1,W      
+                      00096                 btfsc STATUS,C
+                      00097                 goto destino ;r1 es mayor
+                      00098                 endm
+                      00099 ;------------------------------------
+                      00100 
+                      00101 ;Saltar si r1 MAYOR/IGUAL que un valor
+                      00102 ;------------------------------------
+                      00103 jmayori         macro   r1,valor,destino
+                      00104                         local   INIT
+                      00105 INIT:   movlw valor
+                      00106                 subwf r1,W      
+                      00107                 btfsc STATUS,Z
+                      00108                 goto destino
+                      00109                 btfsc STATUS,C
+                      00110                 goto destino ;r1 es mayor
+                      00111                 endm
+                      00112 ;------------------------------------
+                      00113 
+                      00114 ;Saltar si r1 MAYOR/IGUAL que r2
+                      00115 ;------------------------------------
+                      00116 jmayorif        macro   r1,r2,destino
+                      00117                         local   INIT
+                      00118 INIT:   movf r2,W
+                      00119                 subwf r1,W      
+                      00120                 btfsc STATUS,Z
+                      00121                 goto destino
+                      00122                 btfsc STATUS,C
+                      00123                 goto destino ;r1 es mayor
+                      00124                 endm
+                      00125 ;------------------------------------
+                      00126 
+                      00127 
+                      00128 ;Saltar si r1 y un valor son IGUALES.
+                      00129 ;------------------------------------
+                      00130 jigual  macro   r1,valor,destino
+                      00131                         local   INIT
+                      00132 INIT:   movlw valor
+                      00133                 subwf r1,W      
+                      00134                 btfsc STATUS,Z
+                      00135                 goto destino
+                      00136                 endm
+                      00137 ;------------------------------------
+                      00138 
+                      00139 ;Saltar si r1 y r2 son IGUALES.
+                      00140 ;------------------------------------
+                      00141 jigualf         macro   r1,r2,destino
+                      00142                         local   INIT
+                      00143 INIT:   movf r2,W
+                      00144                 subwf r1,W      
+                      00145                 btfsc STATUS,Z
+                      00146                 goto destino
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00147                 endm
+                      00148 ;------------------------------------
+                      00149 
+                      00150 ;Saltar si r1 y un valor son DIFERENTES.
+                      00151 ;------------------------------------
+                      00152 jdif    macro   r1,valor,destino
+                      00153                         local   INIT
+                      00154 INIT:   movlw valor
+                      00155                 subwf r1,W      
+                      00156                 btfss STATUS,Z
+                      00157                 goto destino
+                      00158                 endm
+                      00159 ;------------------------------------
+                      00160 
+                      00161 ;Saltar si r1 y r2 son DIFERENTES.
+                      00162 ;------------------------------------
+                      00163 jdiff   macro   r1,r2,destino
+                      00164                         local   INIT
+                      00165 INIT:   movf r2,W
+                      00166                 subwf r1,W      
+                      00167                 btfss STATUS,Z
+                      00168                 goto destino
+                      00169                 endm
+                      00170 ;------------------------------------
+                      00171 ;--------------------------------------------------------------------
+                      00172 
+                      00173 
+                      00174 
+                      00175 ;-----------------------------OPERACIONES----------------------------
+                      00176 ;--------------------------------------------------------------------
+                      00177 ;SUMA num1+num2
+                      00178 ;------------------------------------
+                      00179 addff   macro   num1,num2,resultado
+                      00180                         local   INIT
+                      00181 INIT:   movf num2,W     
+                      00182                 addwf num1,W
+                      00183                 movwf resultado
+                      00184                 endm
+                      00185 ;------------------------------------
+                      00186 
+                      00187 ;SUMA num1+valor
+                      00188 ;------------------------------------
+                      00189 addlf   macro   num1,valor,resultado
+                      00190                         local   INIT
+                      00191 INIT:   movlw valor     
+                      00192                 addwf num1,W
+                      00193                 movwf resultado
+                      00194                 endm
+                      00195 ;------------------------------------
+                      00196 
+                      00197 ;RESTA num1-num2
+                      00198 ;------------------------------------
+                      00199 subff   macro   num1,num2,resultado
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00200                         local   INIT
+                      00201 INIT:   movf num2,W     
+                      00202                 subwf num1,W
+                      00203                 movwf resultado
+                      00204                 endm
+                      00205 ;------------------------------------
+                      00206 
+                      00207 ;RESTA num1-valor
+                      00208 ;------------------------------------
+                      00209 sublf   macro   num1,valor,resultado
+                      00210                         local   INIT
+                      00211 INIT:   movlw valor     
+                      00212                 subwf num1,W
+                      00213                 movwf resultado
+                      00214                 endm
+                      00215 ;------------------------------------
+                      00216 
+                      00217 ;MULTIPLICACION num1*num2
+                      00218 ;------------------------------------
+                      00219 mulf    macro   num1,num2,resultado
+                      00220                         local   INIT,MULTIPLICAR
+                      00221 INIT:   movlf resultado,h'0'    
+                      00222 MULTIPLICAR:
+                      00223                 movf num1,W
+                      00224                 addwf resultado,F
+                      00225                 decf num2
+                      00226                 btfss STATUS,2
+                      00227                 goto MULTIPLICAR
+                      00228                 endm
+                      00229 ;------------------------------------
+                      00230 
+                      00231 ;MULTIPLICACION num1*valor
+                      00232 ;------------------------------------
+                      00233 mullf   macro   num1,valor,resultado
+                      00234                         local   INIT,MULTIPLICAR
+                      00235 INIT:   movlf resultado,h'0'
+                      00236 MULTIPLICAR:
+                      00237                 addlf resultado,valor,resultado
+                      00238                 decf num1
+                      00239                 btfss STATUS,2
+                      00240                 goto MULTIPLICAR
+                      00241                 endm
+                      00242 ;------------------------------------
+                      00243 
+                      00244 ;DIVISION num1/num2
+                      00245 ;------------------------------------
+                      00246 divf    macro   num1,num2,resultado,residuo
+                      00247                         local   INIT,DIVIDIR,FIN
+                      00248 INIT:   movlf resultado,h'0'
+                      00249                 jmayorif num1,num2,DIVIDIR
+                      00250                 movff num1,residuo
+                      00251                 goto FIN
+                      00252 DIVIDIR:
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00253                 movf num2,W
+                      00254                 subwf num1,F
+                      00255                 incf resultado
+                      00256                 jmayorif num1,num2,DIVIDIR
+                      00257 FIN:    movff num1,residuo      
+                      00258                 endm
+                      00259 ;------------------------------------
+                      00260 
+                      00261 ;DIVISION num1/valor
+                      00262 ;------------------------------------
+                      00263 divlf   macro   num1,valor,resultado,residuo
+                      00264                         local   INIT,DIVIDIR,FIN
+                      00265 INIT:   movlf resultado,h'0'
+                      00266                 jmayori num1,valor,DIVIDIR
+                      00267                 movff num1,residuo
+                      00268                 goto FIN
+                      00269 DIVIDIR:
+                      00270                 movlw valor
+                      00271                 subwf num1,F
+                      00272                 incf resultado
+                      00273                 jmayori num1,valor,DIVIDIR
+                      00274 FIN:    movff num1,residuo      
+                      00275                 endm
+                      00276 ;------------------------------------
+                      00277 ;--------------------------------------------------------------------
+                      00278 
+                      00279 
+                      00280 
+                      00281 ;-----------------------------CONVERSIORES----------------------------
+                      00282 
+                      00283 ;--------------------------------------------------------------------
+                      00284 ;Convertir de HEX TO DEC
+                      00285 ;------------------------------------
+                      00286 hextodec macro hexa,decH,decL
+                      00287         local INIT
+                      00288 residuo equ h'70'
+                      00289 temp equ h'71'
+                      00290 INIT:   divlf hexa,d'100',decH,residuo
+                      00291                 divlf residuo,d'10',decL,residuo
+                      00292                 swapf decL
+                      00293                 divlf residuo,d'1',temp,residuo
+                      00294                 addff decL,temp,decL
+                      00295                 endm
+                      00296 ;------------------------------------
+                      00297 
+                      00298 
+                      00004 
+  00000020            00005 hexa    equ h'20'
+  00000021            00006 decH    equ h'21'
+  00000022            00007 decL    equ h'22'
+  00000070            00008 residuo equ h'70'
+  00000071            00009 temp    equ h'71'
+0000                  00010                 org 0
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0000   2805           00011                 goto inicio
+0005                  00012                 org 5
+0005                  00013 inicio: 
+                      00014                 divlf hexa,d'100',decH,residuo
+  0000                    M                         local   INIT,DIVIDIR,FIN
+                          M INIT:   movlf decH,h'0'
+  0000                    M                         local   INIT
+0005   3000               M INIT:   movlw h'0'
+0006   00A1               M                 movwf decH
+                          M                 jmayori hexa,d'100',DIVIDIR
+  0000                    M                         local   INIT
+0007   3064               M INIT:   movlw d'100'
+0008   0220               M                 subwf hexa,W    
+0009   1903               M                 btfsc STATUS,Z
+000A   2810               M                 goto _1DIVIDIR
+000B   1803               M                 btfsc STATUS,C
+000C   2810               M                 goto _1DIVIDIR ;r1 es mayor
+                          M                 movff hexa,residuo
+  0000                    M                         local   INIT
+000D   0820               M INIT:   movf hexa,W
+000E   00F0               M                 movwf residuo
+000F   2819               M                 goto FIN
+0010                      M DIVIDIR:
+0010   3064               M                 movlw d'100'
+0011   02A0               M                 subwf hexa,F
+Message[305]: Using default destination of 1 (file).
+0012   0AA1               M                 incf decH
+                          M                 jmayori hexa,d'100',DIVIDIR
+  0000                    M                         local   INIT
+0013   3064               M INIT:   movlw d'100'
+0014   0220               M                 subwf hexa,W    
+0015   1903               M                 btfsc STATUS,Z
+0016   2810               M                 goto _1DIVIDIR
+0017   1803               M                 btfsc STATUS,C
+0018   2810               M                 goto _1DIVIDIR ;r1 es mayor
+                          M FIN:    movff hexa,residuo      
+  0000                    M                         local   INIT
+0019   0820               M INIT:   movf hexa,W
+001A   00F0               M                 movwf residuo
+                      00015                 divlf residuo,d'10',decL,residuo
+  0000                    M                         local   INIT,DIVIDIR,FIN
+                          M INIT:   movlf decL,h'0'
+  0000                    M                         local   INIT
+001B   3000               M INIT:   movlw h'0'
+001C   00A2               M                 movwf decL
+                          M                 jmayori residuo,d'10',DIVIDIR
+  0000                    M                         local   INIT
+001D   300A               M INIT:   movlw d'10'
+001E   0270               M                 subwf residuo,W 
+001F   1903               M                 btfsc STATUS,Z
+0020   2826               M                 goto _7DIVIDIR
+0021   1803               M                 btfsc STATUS,C
+0022   2826               M                 goto _7DIVIDIR ;r1 es mayor
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                          M                 movff residuo,residuo
+  0000                    M                         local   INIT
+0023   0870               M INIT:   movf residuo,W
+0024   00F0               M                 movwf residuo
+0025   282F               M                 goto FIN
+0026                      M DIVIDIR:
+0026   300A               M                 movlw d'10'
+0027   02F0               M                 subwf residuo,F
+Message[305]: Using default destination of 1 (file).
+0028   0AA2               M                 incf decL
+                          M                 jmayori residuo,d'10',DIVIDIR
+  0000                    M                         local   INIT
+0029   300A               M INIT:   movlw d'10'
+002A   0270               M                 subwf residuo,W 
+002B   1903               M                 btfsc STATUS,Z
+002C   2826               M                 goto _7DIVIDIR
+002D   1803               M                 btfsc STATUS,C
+002E   2826               M                 goto _7DIVIDIR ;r1 es mayor
+                          M FIN:    movff residuo,residuo   
+  0000                    M                         local   INIT
+002F   0870               M INIT:   movf residuo,W
+0030   00F0               M                 movwf residuo
+Message[305]: Using default destination of 1 (file).
+0031   0EA2           00016                 swapf decL
+                      00017                 divlf residuo,d'1',temp,residuo
+  0000                    M                         local   INIT,DIVIDIR,FIN
+                          M INIT:   movlf temp,h'0'
+  0000                    M                         local   INIT
+0032   3000               M INIT:   movlw h'0'
+0033   00F1               M                 movwf temp
+                          M                 jmayori residuo,d'1',DIVIDIR
+  0000                    M                         local   INIT
+0034   3001               M INIT:   movlw d'1'
+0035   0270               M                 subwf residuo,W 
+0036   1903               M                 btfsc STATUS,Z
+0037   283D               M                 goto _13DIVIDIR
+0038   1803               M                 btfsc STATUS,C
+0039   283D               M                 goto _13DIVIDIR ;r1 es mayor
+                          M                 movff residuo,residuo
+  0000                    M                         local   INIT
+003A   0870               M INIT:   movf residuo,W
+003B   00F0               M                 movwf residuo
+003C   2846               M                 goto FIN
+003D                      M DIVIDIR:
+003D   3001               M                 movlw d'1'
+003E   02F0               M                 subwf residuo,F
+Message[305]: Using default destination of 1 (file).
+003F   0AF1               M                 incf temp
+                          M                 jmayori residuo,d'1',DIVIDIR
+  0000                    M                         local   INIT
+0040   3001               M INIT:   movlw d'1'
+0041   0270               M                 subwf residuo,W 
+0042   1903               M                 btfsc STATUS,Z
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0043   283D               M                 goto _13DIVIDIR
+0044   1803               M                 btfsc STATUS,C
+0045   283D               M                 goto _13DIVIDIR ;r1 es mayor
+                          M FIN:    movff residuo,residuo   
+  0000                    M                         local   INIT
+0046   0870               M INIT:   movf residuo,W
+0047   00F0               M                 movwf residuo
+                      00018                 addff decL,temp,decL
+  0000                    M                         local   INIT
+0048   0871               M INIT:   movf temp,W     
+0049   0722               M                 addwf decL,W
+004A   00A2               M                 movwf decL
+                      00019                 end             
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CKE                               00000006
+CKP                               00000004
+CREN                              00000004
+CSRC                              00000007
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+PR2                               00000092
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISD6                            00000006
+TRISD7                            00000007
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00000FCF
+_CP_HALF                          00001FDF
+_CP_OFF                           00003FFF
+_CP_UPPER_256                     00002FEF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_ENABLE_OFF                   00003DFF
+_WRT_ENABLE_ON                    00003FFF
+_WRT_OFF                          00003DFF
+_WRT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+addff                             
+addlf                             
+decH                              00000021
+decL                              00000022
+divf                              
+divlf                             
+hexa                              00000020
+hextodec                          
+inicio                            00000005
+jdif                              
+jdiff                             
+jigual                            
+jigualf                           
+jmayor                            
+jmayorf                           
+jmayori                           
+jmayorif                          
+jmenor                            
+jmenorf                           
+jmenori                           
+jmenorif                          
+movff                             
+movlf                             
+mulf                              
+mullf                             
+residuo                           00000070
+subff                             
+sublf                             
+temp                              00000071
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X----XXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXX----- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    71
+Program Memory Words Free:  8121
+
+
+MPASM  5.51           CONVERTIDORHECTODEC.ASM   3-16-2020  18:18:33         PAGE 17
+
+
+
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     5 reported,     0 suppressed
+
+

@@ -1,0 +1,56 @@
+Author: MACZ
+Intalación: Ver "intalación.txt"
+*Nota: Todos los macros mandados a llamar deben de estar en minusculas.
+
+Funcionalidad: Es una librerías sencilla que se puede importar para obtener macros que faciliten operaciones.
+		Algunas de las macros que contienen son:
+
+
+		---------------MANEJO DE REGISTROS-------------------
+		-Asignar un valor directamente a un registro:
+		-Mover el valor de un registro a otro:
+		
+
+		------------COMPARACIONES CON SALTO-------------------
+		-Saltar si un registro es MENOR,MENOR/IGUAL,MAYOR,MAYOR/IGUAL,IGUAL,DIFERENTE que un valor
+		-Saltar si un registro es MENOR,MENOR/IGUAL,MAYOR,MAYOR/IGUAL,IGUAL,DIFERENTE que otro registro
+		
+		----------------------OPERACIONES-------------------
+		-SUMA Y RESTA directa entre dos registros.
+		-SUMA Y RESTA directa entre un registro y un valor.
+		-MULTIPLICACION Y DIVISION entre dos registros.
+		-MULTIPLICACION Y DIVISION entre un registro y un valor.
+
+
+		------------------------CONVERSIONES------------------
+		-Conversion de HEX a DEC.	
+
+
+Uso: Los macros se encuentran en el archivo "extras.inc", dicho archivo contiene comentarios sencillos, 
+		con una breve descripcion de lo que ahce cada macro. Para usar un macro solo se debe seguir la estructura:
+
+			nombreDelMacro "parametro1","parametro2","parametro3"
+
+		El nombre debe ser por el correspondiente del macro, así como sus parametros.
+		
+		***Algunos ejemplos****
+
+		-Restar un valor de un registro directamente.
+		
+			sublf registro1,h'20'
+
+		-Saltar si un registro es mayor o igual a un valor.
+
+			jmayorif registro1,d'100',etiqueta
+		
+		-Convertir un numero hexamdecimal almacenado en una dirección y guardarlo en dos registros en decimal.
+
+			hextodec  hexa,decH,decL
+
+			donde: hexa, es el registro/dirección de donde obtendras el valor.
+					decH es el registro/dirección donde se almacenara la parte alta(centenas) del decimal.
+					decL es el registro/dirección donde se almacenara la parte baja(decenas y unidades) del decimal.
+
+
+***Si deseas agregar alguna otra se puede abriendo y escribiendo el macro dentro del archivo "extras.inc".
+Muchas gracias y espero les sea de ayuda c:
