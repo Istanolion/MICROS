@@ -1,6 +1,0 @@
-Warning[205] C:\USERS\AKUMA\DOCUMENTS\2020-2\MICROS\PROYECTO2\HEX2DEC.ASM 1 : Found directive in column 1. (PROCESSOR)
-Message[301] C:\PROGRAM FILES (X86)\MICROCHIP\MPASM SUITE\P16F877.INC 33 : MESSAGE: (Processor-header file mismatch.  Verify selected processor.)
-Message[305] C:\USERS\AKUMA\DOCUMENTS\2020-2\MICROS\PROYECTO2\HEX2DEC.ASM 20 : Using default destination of 1 (file).
-Message[305] C:\USERS\AKUMA\DOCUMENTS\2020-2\MICROS\PROYECTO2\HEX2DEC.ASM 27 : Using default destination of 1 (file).
-Message[305] C:\USERS\AKUMA\DOCUMENTS\2020-2\MICROS\PROYECTO2\HEX2DEC.ASM 30 : Using default destination of 1 (file).
-Message[305] C:\USERS\AKUMA\DOCUMENTS\2020-2\MICROS\PROYECTO2\HEX2DEC.ASM 35 : Using default destination of 1 (file).
