@@ -1,0 +1,9 @@
+
+#Archivos generados al compilar archivos.asm
+
+*.cof
+*.err
+*.HEX
+*.lst
+*.map
+*.O
