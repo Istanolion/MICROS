@@ -1,6 +1,7 @@
 
 #Archivos generados al compilar archivos.asm
 
+*.mcs
 *.cof
 *.err
 *.HEX

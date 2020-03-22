@@ -1,7 +1,9 @@
+	PROCESSOR 16f877
+	INCLUDE <p16f877.inc>
 dividendo equ H'20'	 		; Registro utilizado para dividendo
 divisor equ H'21'			; Registro utilizado para divisor
 resultado equ H'22'			; Resultado = dividendo / divisor con numeros enteros
-residuo equ H'23'			; Registro utilizado para residuo
+Regresiduo equ H'23'			; Registro utilizado para residuo
 auxiliar equ H'24'			; Registro utilizado para auxiliar
 
 	org 0				; vector de reset
@@ -31,7 +33,7 @@ division
 	GOTO division 			; y repetimos la operacion
 residuo: 
 	ADDWF dividendo,w 		; agregamos a w el dividendo
-	MOVWF residuo 			; y lo movemos a residuo
+	MOVWF Regresiduo 			; y lo movemos a residuo
 	MOVF auxiliar,w 		; copiamos el auxiliar en w
 	MOVWF dividendo 		; y lo copiamos en dividendo
 	GOTO $				; terminamos programa

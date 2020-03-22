@@ -4,7 +4,7 @@
 rega equ H'20'				; numero en HEX
 decH equ H'21'				; Registro parte alta
 decL equ H'22'				; Registro
-regAux equ H'23'			; Resultado de la multiplicacion
+regAux equ H'23'			; Reg Auxiliar
 
 	org 0				; Vector de reset
 	goto inicio			; Ve al inicio del programa
