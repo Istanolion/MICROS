@@ -67,11 +67,17 @@ datos movwf PORTB
     call ret200
     bsf PORTA,0
     bsf PORTA,1
+;RS,E=1
     call ret200
     bcf PORTA,1
+;E=0
     call ret200
     call ret200
     return
+ ; PORTB BUS DE DATOS B0-D0 ... B7-D7
+ ; RS - A0
+ ; E - A1
+ ; R/W - GND
 
 ret200 movlw 0x02
        movwf valor1 

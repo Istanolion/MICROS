@@ -30,6 +30,15 @@ cte10 equ 20h
 cte11 equ 35h
 cte12 equ 61h
 
+;PortA is used to read the deepswitches
+;PORTB is used to Read the KeyPad
+;PORTC is used for LCD control signals
+;C0 is RS
+;C1 is RW
+;C2 is E
+;PORTD is used to transfer data to the LCD
+
+
 	org 0					; vector de reset
 	goto inicio				; ve al inicio del programa
  	org 5
@@ -44,67 +53,144 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF ADCON1			; ADCON1 <- (W) desactivar convertidor
 	MOVWF H'3F'				; W <- h'3F'
 	MOVLW TRISA 			; TRISA <- (W) configuramos PORTA como entrada
-	MOVLW H'FF'				; W <- h'FF'
+	MOVLW H'F0'				; W <- h'F0' B'11110000' We need in and outputs
 	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como entrada
-	MOVLW H'FF'				; W <- h'00'
+	MOVLW H'F8'				; W <- h'F8' B'11111000' Only need three outputs
 	MOVWF TRISC				; TRISC <- (W) configuramos PORTC como salida
-	MOVLW H'FF'				; W <- h'00'
+	MOVLW H'00'				; W <- h'00'
 	MOVWF TRISD				; TRISD <- (W) configuramos PORTD como salida
  	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 
-	MOVF PORTA,W			; W <- (PORTA) leer entrada en PORTA
-	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
-	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
+;	MOVF PORTA,W			; W <- (PORTA) leer entrada en PORTA
+;	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
+;	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
+
+	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
+	CALL Names
+
+	GOTO $					; fin del programa
 							
 
+Names:
+;Nombre de Amos Manuel Vega Lopez
+	MOVLW 0x41
+	CALL LCD_Datos
+	MOVLW 0x6D
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x73
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x4D
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+ 	MOVLW 0x6E
+	CALL LCD_Datos
+	MOVLW 0x75
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x6C
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x56
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x67
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x4C
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x70
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x7A
+	CALL LCD_Datos
+;Nombre de Diego Iñaki Garciarebollo Rojas
+	MOVLW 0x44
+	MOVLW 0x69
+	MOVLW 0x65
+	MOVLW 0x67
+	MOVLW 0x6F
+	MOVLW 0x20
+	MOVLW 0x49
+	MOVLW 0x00 ; ñ creada en la CGRAM
+	MOVLW 0x61
+	MOVLW 0x6B
+	MOVLW 0x69
+	MOVLW 0x20
+	MOVLW 0x47
+	MOVLW 0x61
+	MOVLW 0x72
+	MOVLW 0x63
+	MOVLW 0x69
+	MOVLW 0x61
+	MOVLW 0x72
+	MOVLW 0x65
+	MOVLW 0x62
+	MOVLW 0x6F
+	MOVLW 0x6C
+	MOVLW 0x6C
+	MOVLW 0x6F
+	MOVLW 0x20
+	MOVLW 0x52
+	MOVLW 0x6F
+	MOVLW 0x6A
+	MOVLW 0x61
+	MOVLW 0x73
+
+	RETURN
 ; RUTINA PARA INICIALIZAR LA PANTALLA LCD 16X2
 Inicia_LCD
 	BCF PORTC, 0						; RS = 0
 	MOVLW H'30'         				; Enviamos H'30' al bus de datos
-	MOVWF PORTD							;
 	call LCD_Comando					; Llamamos LCD_Comando
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
 	MOVLW H'30'         				; Enviamos H'30' al bus de datos
-	MOVWF PORTD							;
 	call LCD_Comando					; Llamamos LCD_Comando
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
-	MOVLW H'38'         				; Enviamos H'38' al bus de datos
-	MOVWF PORTD							;
+	MOVLW H'38'         				; Enviamos H'38' al bus de datos  Decimos que el LCD funciona con 8 bits de datos
 	call LCD_Comando					; Llamamos LCD_Comando
-	MOVLW H'0C'         				; Enviamos H'0C' al bus de datos
-	MOVWF PORTD							;
+	MOVLW H'0E'         				; Enviamos H'0C' al bus de datos  Decimos que se prenda el display, cursor apagado y parpade off
 	call LCD_Comando					; Llamamos LCD_Comando
-	MOVLW H'01'         				; Enviamos H'01' al bus de datos
-	MOVWF PORTD							;
+	MOVLW H'01'         				; Enviamos H'01' al bus de datos  Borramos el display
 	call LCD_Comando					; Llamamos LCD_Comando
-	MOVLW H'06'         				; Enviamos H'06' al bus de datos
-	MOVWF PORTD							;
+	MOVLW H'06'         				; Enviamos H'06' al bus de datos  Damos el funcionamiento
 	call LCD_Comando					; Llamamos LCD_Comando
-	MOVLW H'02'         				; Enviamos H'02' al bus de datos
-	MOVWF PORTD							;
+	MOVLW H'02'         				; Enviamos H'02' al bus de datos  Cursor a Home
 	call LCD_Comando					; Llamamos LCD_Comando
-	MOVLW H'80'         				; Enviamos H'80' al bus de datos
-	MOVWF PORTD							; Para inicializar el despliegue en el renglon 1, columna 1
+	MOVLW H'80'         				; Enviamos H'80' al bus de datos  Forzamos el cursor al incio de la linea 1
 	call LCD_Comando					;
 	return
 
 ;SUBRUTINA PARA ENVIAR COMANDOS
 LCD_Comando
+	MOVWF PORTD
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
 	BSF PORTC, 2        				; Enable = 1
 	BCF PORTC, 0						; RS = 0
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
 	BCF PORTC, 2    					; ENABLE=0    
-	BCF PORTC, 0						; RS = 0
 	call Retardo_400_Microsegundos     	; TIEMPO DE ESPERA
 	return     
 ;SUBRUTINA PARA ENVIAR UN DATO
 LCD_Datos
+	MOVWF PORTD
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
 	BSF PORTC, 2        				; Enable = 1		
-	BSF PORTC, 0						; RS = 0
+	BSF PORTC, 0						; RS = 1
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
-	BSF PORTC, 0						; RS = 0
 	BCF PORTC, 2    					; ENABLE=0    
 	call Retardo_400_Microsegundos     	; TIEMPO DE ESPERA
 	return     
