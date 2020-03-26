@@ -62,16 +62,37 @@ inicio 						; Etiqueta de inicio de programa
  	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 
 Comportamiento:
-;	MOVF PORTA,W			; W <- (PORTA) leer entrada en PORTA
-;	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
-;	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
 	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
-;	CALL Names				; Llama la subrutina que imprime los nombres
-;	CALL puma				; Llama la subrutina que imprime el puma
-	CALL HolaMundo			; Llama la subrutina Hola Mundo
+loop:
+	MOVLW 0x01
+	call LCD_Comando
+
+	MOVF PORTA,W			; W <- (PORTA) leer entrada en PORTA
+	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
+	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
+	goto HolaMundo			; Llama la subrutina Hola Mundo
+	goto Names				; Llama la subrutina que imprime los nombres
+	goto Hexadecimal
+	goto Binario
+	goto Deximal
+	goto puma				; Llama la subrutina que imprime el puma
+
+	goto loop
+	goto loop
 	GOTO $					; fin del programa
 	
+
+
+Hexadecimal
+	goto loop
+
+Binario
+	goto loop
+
+Deximal
+	goto loop
+
 HolaMundo:
 	MOVLW 0x48
 	CALL LCD_Datos 
@@ -93,7 +114,7 @@ HolaMundo:
 	CALL LCD_Datos
 	MOVLW 0x6F
 	CALL LCD_Datos
-	RETURN
+	goto loop
 
 puma:
 	MOVLW 0x01
@@ -112,8 +133,8 @@ puma:
 	CALL LCD_Datos
 	MOVLW 0x06
 	CALL LCD_Datos
-	Return
-
+	goto loop
+; ===========================================================================
 moveDisplay:
 	MOVLW 0X18				;Move display to Left
 	CALL LCD_Comando
@@ -138,7 +159,7 @@ createSymbols:
 	CALL LCD_Datos
 	MOVLW 0x11
 	CALL LCD_Datos
-;ALL FOR THE Ñ
+;ALL FOR THE Ã‘
 ;Puma Time
 	MOVLW 0x01
 	CALL LCD_Datos
@@ -283,7 +304,7 @@ Names:
 	CALL LCD_Datos
 	MOVLW 0x7A
 	CALL LCD_Datos
-;Nombre de Diego Iñaki Garciarebollo Rojas
+;Nombre de Diego IÃ±aki Garciarebollo Rojas
 ;We need to put the direction for the next line
 	MOVLW 0xC0	; Dir that starts line 2
 	CALL LCD_Comando
@@ -303,7 +324,7 @@ Names:
 	MOVLW 0x49
 	CALL LCD_Datos
 	MOVLW 0x00
-	CALL LCD_Datos ; ñ creada en la CGRAM
+	CALL LCD_Datos ; Ã± creada en la CGRAM
 	MOVLW 0x61
 	CALL LCD_Datos
 	MOVLW 0x6B
@@ -352,7 +373,10 @@ Names:
 	CALL LCD_Datos
 	
 	CALL moveDisplay
-	RETURN
+	goto loop
+
+; ==============================================================================
+
 ; RUTINA PARA INICIALIZAR LA PANTALLA LCD 16X2
 Inicia_LCD
 	BCF PORTC, 0						; RS = 0
@@ -396,7 +420,8 @@ LCD_Datos
 	BCF PORTC, 2    					; ENABLE=0    
 	call Retardo_400_Microsegundos     	; TIEMPO DE ESPERA
 	return     
-
+ 
+; =============================================================================
 ;Retardo de 1 segundo
 Retardo_1_Segundo 						; inicio de la subrutina de retardo
 	movlw cte1				
@@ -473,4 +498,3 @@ uno_400
 
 
 	END
-
