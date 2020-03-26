@@ -61,15 +61,181 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF TRISD				; TRISD <- (W) configuramos PORTD como salida
  	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 
+Comportamiento:
 ;	MOVF PORTA,W			; W <- (PORTA) leer entrada en PORTA
 ;	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
 ;	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
-
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
-	CALL Names
-
+	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
+;	CALL Names				; Llama la subrutina que imprime los nombres
+;	CALL puma				; Llama la subrutina que imprime el puma
+	CALL HolaMundo			; Llama la subrutina Hola Mundo
 	GOTO $					; fin del programa
-							
+	
+HolaMundo:
+	MOVLW 0x48
+	CALL LCD_Datos 
+	MOVLW 0x6F
+	CALL LCD_Datos 
+	MOVLW 0x6C
+	CALL LCD_Datos 
+	MOVLW 0x61
+	CALL LCD_Datos 
+	MOVLW 0x20 
+	CALL LCD_Datos
+	MOVLW 0x4D 
+	CALL LCD_Datos
+	MOVLW 0x75 
+	CALL LCD_Datos
+	MOVLW 0x6E 
+	CALL LCD_Datos
+	MOVLW 0x64 
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	RETURN
+
+puma:
+	MOVLW 0x01
+	CALL LCD_Datos
+	MOVLW 0x02
+	CALL LCD_Datos
+	MOVLW 0x03
+	CALL LCD_Datos
+
+	MOVLW 0xC0	; Dir that starts line 2
+	CALL LCD_Comando
+
+	MOVLW 0x04
+	CALL LCD_Datos
+	MOVLW 0x05
+	CALL LCD_Datos
+	MOVLW 0x06
+	CALL LCD_Datos
+	Return
+
+moveDisplay:
+	MOVLW 0X18				;Move display to Left
+	CALL LCD_Comando
+	Return
+
+createSymbols:
+	MOVLW 0X40
+	CALL LCD_Comando
+	MOVLW 0x00
+	CALL LCD_Datos	
+	MOVLW 0x0E
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x16
+	CALL LCD_Datos
+	MOVLW 0x19
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+;ALL FOR THE Ñ
+;Puma Time
+	MOVLW 0x01
+	CALL LCD_Datos
+	MOVLW 0x0F
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x0F
+	CALL LCD_Datos
+	MOVLW 0x0C
+	CALL LCD_Datos
+	MOVLW 0x0E
+	CALL LCD_Datos
+	MOVLW 0x0E
+	CALL LCD_Datos
+
+	MOVLW 0x1E
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x1F
+	CALL LCD_Datos
+	MOVLW 0x1C
+	CALL LCD_Datos
+	MOVLW 0x1D
+	CALL LCD_Datos
+	MOVLW 0x1D
+	CALL LCD_Datos
+
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x18
+	CALL LCD_Datos
+	MOVLW 0x1C
+	CALL LCD_Datos
+	MOVLW 0x1C
+	CALL LCD_Datos
+	MOVLW 0x18
+	CALL LCD_Datos
+	MOVLW 0x18
+	CALL LCD_Datos
+	MOVLW 0x18
+	CALL LCD_Datos
+	MOVLW 0x18
+	CALL LCD_Datos
+
+	MOVLW 0x06
+	CALL LCD_Datos
+	MOVLW 0x06
+	CALL LCD_Datos
+	MOVLW 0x07
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x01
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	
+	MOVLW 0x1D
+	CALL LCD_Datos
+	MOVLW 0x01
+	CALL LCD_Datos
+	MOVLW 0x17
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x1E
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+
+	MOVLW 0x10
+	CALL LCD_Datos
+	MOVLW 0x10
+	CALL LCD_Datos
+	MOVLW 0x10
+	CALL LCD_Datos
+
+;REDIRECT TO DDRAM
+	MOVLW H'80'         				
+	CALL LCD_Comando
+	RETURN				
 
 Names:
 ;Nombre de Amos Manuel Vega Lopez
@@ -118,38 +284,74 @@ Names:
 	MOVLW 0x7A
 	CALL LCD_Datos
 ;Nombre de Diego Iñaki Garciarebollo Rojas
-	MOVLW 0x44
-	MOVLW 0x69
-	MOVLW 0x65
-	MOVLW 0x67
-	MOVLW 0x6F
-	MOVLW 0x20
-	MOVLW 0x49
-	MOVLW 0x00 ; ñ creada en la CGRAM
-	MOVLW 0x61
-	MOVLW 0x6B
-	MOVLW 0x69
-	MOVLW 0x20
-	MOVLW 0x47
-	MOVLW 0x61
-	MOVLW 0x72
-	MOVLW 0x63
-	MOVLW 0x69
-	MOVLW 0x61
-	MOVLW 0x72
-	MOVLW 0x65
-	MOVLW 0x62
-	MOVLW 0x6F
-	MOVLW 0x6C
-	MOVLW 0x6C
-	MOVLW 0x6F
-	MOVLW 0x20
-	MOVLW 0x52
-	MOVLW 0x6F
-	MOVLW 0x6A
-	MOVLW 0x61
-	MOVLW 0x73
+;We need to put the direction for the next line
+	MOVLW 0xC0	; Dir that starts line 2
+	CALL LCD_Comando
 
+	MOVLW 0x44
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x67
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x49
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos ; ñ creada en la CGRAM
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x6B
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x47
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x72
+	CALL LCD_Datos
+	MOVLW 0x63
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x72
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x62
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x6C
+	CALL LCD_Datos
+	MOVLW 0x6C
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x20
+	CALL LCD_Datos
+	MOVLW 0x52
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x6A
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x73
+	CALL LCD_Datos
+	
+	CALL moveDisplay
 	RETURN
 ; RUTINA PARA INICIALIZAR LA PANTALLA LCD 16X2
 Inicia_LCD
@@ -171,7 +373,7 @@ Inicia_LCD
 	MOVLW H'02'         				; Enviamos H'02' al bus de datos  Cursor a Home
 	call LCD_Comando					; Llamamos LCD_Comando
 	MOVLW H'80'         				; Enviamos H'80' al bus de datos  Forzamos el cursor al incio de la linea 1
-	call LCD_Comando					;
+	call LCD_Comando					; Esta diciendo que el sig dato a escribir va en el primer slot de la DDRAM
 	return
 
 ;SUBRUTINA PARA ENVIAR COMANDOS
