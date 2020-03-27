@@ -51,8 +51,8 @@ inicio 						; Etiqueta de inicio de programa
  	BCF STATUS,6 			; Ponemos un 0 en el bit 6 de STATUS (RP1) para cambiar de banco 0 al 1
 	MOVLW H'06'				; W <- h'06'
 	MOVWF ADCON1			; ADCON1 <- (W) desactivar convertidor
-	MOVWF H'3F'				; W <- h'3F'
-	MOVLW TRISA 			; TRISA <- (W) configuramos PORTA como entrada
+	MOVLW H'3F'				; W <- h'3F'
+	MOVWF TRISA 			; TRISA <- (W) configuramos PORTA como entrada
 	MOVLW H'F0'				; W <- h'F0' B'11110000' We need in and outputs
 	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como entrada
 	MOVLW H'F8'				; W <- h'F8' B'11111000' Only need three outputs
