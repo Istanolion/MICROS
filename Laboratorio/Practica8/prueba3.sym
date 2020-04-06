@@ -1,0 +1,61 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @WRITE_PROGRAM_MEMORY8.P2
+008     PSP_DATA
+015     CCP_1_LOW
+015     CCP_1
+016     CCP_1_HIGH
+01B     CCP_2
+01B     CCP_2_LOW
+01C     CCP_2_HIGH
+020     var1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+10D-10E @READ_PROGRAM_MEMORY8.P1
+10D-10E @WRITE_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  MAIN
+000004  @cinit1
+00000C  @cinit2
+001F00  loader16F877
+
+Project Directory:
+    Z:\Istanolion\Documents\2020-2\Micros\MICROS\Laboratorio\Practica8\
+
+Project Files:
+    prueba3.c                                               [06-abr.-20 09:58  CRC=1FDAAA49]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877.h [23-mar.-20 11:12  CRC=90274745]
+
+Source signature=402938D3
+Program memory checksum=0000
+Hex file CRC=2CD3
+
+Units:
+    Z:\Istanolion\Documents\2020-2\Micros\MICROS\Laboratorio\Practica8\prueba3 (main)
+
+Compiler Settings:
+    Processor:      PIC16F877
+    Pointer Size:   16
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:       CCS5
+
+Compiler operating in Evaluation Mode
+To obtain a fully enabled compiler visit www.ccsinfo.com/products
+
+Output Files:
+    XREF file:   prueba3.xsym
+    Errors:      prueba3.err
+    Ext Symbols: prueba3.esym
+    INHX8:       prueba3.hex
+    Symbols:     prueba3.sym
+    List:        prueba3.lst
+    Debug/COFF:  prueba3.cof
+    Project:     prueba3.ccspjt
+    Call Tree:   prueba3.tre
+    Statistics:  prueba3.STA

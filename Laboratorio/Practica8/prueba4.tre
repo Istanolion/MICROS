@@ -1,0 +1,9 @@
+ÀÄprueba4
+   ÃÄMAIN  0/58  Ram=1
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄ@cinit2  (Inline)  Ram=0
+   ³  ÃÄ@PSTRINGC7_9600_62_63  0/88  Ram=4
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@PSTRINGC7_9600_62_63  0/88  Ram=4
+   ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ÀÄloader16F877  3/1  Ram=0

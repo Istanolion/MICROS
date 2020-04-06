@@ -1,0 +1,43 @@
+#include <16f877.h> //se define el micro
+#fuses HS,NOPROTECT,
+#use delay(clock=20000000) //se define la velocidad del reloj
+#use rs232(baud=9600, xmit=PIN_C6, rcv=PIN_C7) //se define la tasa de transferencia, y se indica que pines 
+//son los receptores y transmisores de datos
+#org 0x1F00, 0x1FFF void loader16F877(void) {} //for the 8k 16F876/7
+void Apagados(){
+ output_b(0x00); //se apagan todos los bits del puerto B
+ delay_ms(500); //hay un retardo de 500ms =.5s
+ return;
+}
+void Prendidos(){
+ output_b(0x00); //se apagan todos los bits del puerto B
+ delay_ms(500); //hay un retardo de 500ms =.5s
+ return;
+}
+void CorDer(){
+  int i=128;
+  while(i>=1){
+    output_b(i); //ponermos el bit mas significativo de B como prendido
+    i=i/2;
+    delay_ms(500);
+  }
+  return;
+}
+void CorIzq(){
+  int i=1;
+  while(i<=128){
+    output_b(i); //ponermos el bit mas significativo de B como prendido
+    i=i*2;
+    delay_ms(500);
+  }
+  return;
+}
+
+
+void main(){
+while(1){
+ CorDer();
+ CorIzq
+}//while
+}//main 
+

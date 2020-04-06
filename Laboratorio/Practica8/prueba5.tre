@@ -1,0 +1,25 @@
+ÀÄprueba5
+   ÃÄMAIN  0/67  Ram=2
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄ@cinit2  (Inline)  Ram=0
+   ³  ÃÄApagado  0/12  Ram=1
+   ³  ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄPrendido  0/13  Ram=1
+   ³  ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄCorDer  0/22  Ram=2
+   ³  ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄCorIzq  0/33  Ram=2
+   ³  ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄIdaVuelta  0/5  Ram=0
+   ³  ³  ÃÄCorDer  0/22  Ram=2
+   ³  ³  ³  ÀÄ*
+   ³  ³  ÀÄCorIzq  0/33  Ram=2
+   ³  ³     ÀÄ*
+   ³  ÃÄParpadeo  0/5  Ram=0
+   ³  ³  ÃÄApagado  0/12  Ram=1
+   ³  ³  ³  ÀÄ*
+   ³  ³  ÀÄPrendido  0/13  Ram=1
+   ³  ³     ÀÄ*
+   ³  ÀÄ@PSTRINGC7_9600_62_63  0/90  Ram=4
+   ÀÄloader16F877  3/1  Ram=0
