@@ -53,6 +53,8 @@ inicio 						; Etiqueta de inicio de programa
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
 Comportamiento:
 	CLRF numero
+	CLRF RegAux3
+	CLRF RegAux4
 	MOVLW 0x01
 	call LCD_Comando
 	MOVLW 0x02
@@ -80,7 +82,7 @@ Decimal
 	CALL LCD_Datos
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
-	;Aqui va su procedimiento
+	CALL ConversionDecimal
 	GOTO Comportamiento
 
 Hexadecimal:
@@ -88,7 +90,7 @@ Hexadecimal:
 	CALL LCD_Datos		
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
-	;Aqui va su procedimiento
+
 	GOTO Comportamiento
 Binario:
 	MOVLW 0x42			; B
@@ -99,17 +101,50 @@ Binario:
 	GOTO Comportamiento
 
 Voltaje:
-	MOVLW 0x56			; V
-	CALL LCD_Datos
-	MOVLW 0x27	 		; '
-	CALL LCD_Datos
+	MOVF RegAux2,w          ;
 	;Aqui va su procedimiento
 	CALL Unidades			; Mandamos a escribir las unidades (enteros) de la lectura
 	CALL Decimales			; Mandamos a escribir lo que esta depues del punto decimal
 	MOVLW 0X56
 	CALL LCD_Datos
 	GOTO Comportamiento					; fin del programa
-
+;==========================================================================
+ConversionDecimal:
+centena: 
+	MOVLW 0x64				;w=D'100'
+	SUBWF RegAux2,w			; w=D'RegAux2-D'100
+	BTFSS STATUS,C			;Check Status C 
+	GOTO Indecena			; RegAux2<D'100 check D'10
+	INCF RegAux3			; RegAux2>D'100 inc RegAux3 (Centenar)
+	MOVWF RegAux2			; RegAux2= W
+	GOTO centena			; loop
+Indecena:
+	MOVF RegAux3,w			;W= RegAux3 (centenar)
+	CALL LCD_Digito			; print Centenar
+	CLRF RegAux3			; Clear RegAux3 (Now we check D'10)
+decena:  
+	MOVLW 0x0A				;W=D'10
+	SUBWF RegAux2,w			;W=RegAux2-D'10
+	BTFSS STATUS,C			;Check Status,c
+	GOTO swap				;RegAux2<D'10
+	INCF RegAux3			;RegAux2>D'10 inc RegAux3(Dec)
+	MOVWF RegAux2			;RegAux2=W
+	GOTO decena				;loop
+swap: MOVF RegAux3,w		;W=RegAux3 (Dec)
+	CALL LCD_Digito			;Print Dec
+	CLRF RegAux3			;Clear RegAux3 (Now we Check Units)
+unidad: MOVLW 0x01			;w=D'1'
+	SUBWF RegAux2,w			;W=RegAux2-D'1
+	BTFSS STATUS,C			;Check Status Carry
+	GOTO finDecimal			;RegAux2<D'1
+	INCF RegAux3			;RegAux2>D'1 inc RegAux3 (Unit)
+	MOVWF RegAux2			;RegAux2=w
+	GOTO unidad				;loop
+finDecimal
+	MOVF RegAux3,w			;w=RegAux3  (unit)
+	CALL LCD_Digito			;Print Units
+	RETURN					; we have finished this procedure
+;==========================================================================
 
 ;===============================================================================	
 MostrarBinario:
