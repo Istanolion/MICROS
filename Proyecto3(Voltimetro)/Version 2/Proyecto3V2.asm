@@ -90,7 +90,7 @@ Hexadecimal:
 	CALL LCD_Datos		
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
-
+	CALL MostrarHex
 	GOTO Comportamiento
 Binario:
 	MOVLW 0x42			; B
@@ -145,7 +145,47 @@ finDecimal
 	CALL LCD_Digito			;Print Units
 	RETURN					; we have finished this procedure
 ;==========================================================================
-
+MostrarHex:
+	MOVLW 0x10				;w=b'0001 0000
+	SUBWF RegAux2,W			;W=RegAux2-0x10
+	BTFSS STATUS,C 			;CHECK CARRY
+	GOTO PHPart				;(PrintHighPart)RegAux2<0x10 we Have Finished the 4 BMS
+	INCF RegAux3			;RegAux1>=0x10 we increment RegAux3(Helper to display)
+	MOVWF RegAux2			;RegAux2=W
+	GOTO MostrarHex			;loop	
+PHPart:
+	MOVLW 0x0A				;W=D'9 to check if we to print a number or letter
+	SUBWF RegAux3,W			;w=RegAux3-D'9
+	BTFSS STATUS,C			;CHECK CARRY
+	GOTO Pnumero			;RegAux3<=D'9 print number 
+	MOVF RegAux3,w
+	CALL LCD_Letra			;RegAux3>D'9 print letter
+	CLRF RegAux3			; we clean RegAux3 (Now we check 4BLS)
+	GOTO Lowpart
+Pnumero:
+	MOVF RegAux3,w
+	CALL LCD_Digito
+	CLRF RegAux3			; we clean RegAux3 (Now we check 4BLS)
+Lowpart:
+	MOVLW 0x01				;w=B'0000 0001
+	SUBWF RegAux2,W			;w=RegAux2-d'1
+	BTFSS STATUS,C			;CHECK CARRY
+	GOTO PLPart				; (PrintLowPart) RegAux2<d'1
+	INCF RegAux3			; RegAux2>=d'1
+	MOVWF RegAux2			;RegAux2=w
+	GOTO Lowpart
+PLPart:
+	MOVLW 0x0A				;W=D'9 to check if we to print a number or letter
+	SUBWF RegAux3,W			;w=RegAux3-D'9
+	BTFSS STATUS,C			;CHECK CARRY
+	GOTO finish				;RegAux3<=D'9 print number 
+	MOVF RegAux3,w
+	CALL LCD_Letra			;RegAux3>D'9 print letter
+	RETURN
+finish:	
+	MOVF RegAux3,w
+	CALL LCD_Digito
+	RETURN
 ;===============================================================================	
 MostrarBinario:
 	MOVLW h'80'				;W=B'1000 0000'
@@ -322,6 +362,10 @@ LCD_Datos
  LCD_Digito:
 	ADDLW 0x30			;W+30, now W has the value needed for the LCD to Display the correct number
 	CALL LCD_Datos		;The display shows the value read by the keypad
+	RETURN
+LCD_Letra:	 
+	ADDLW 0x37			;w+37, now w Has the value needed for the LCD to Display the correct Letter
+	CALL LCD_Datos
 	RETURN
 ; =============================================================================
 ;Retardo de 1 segundo
