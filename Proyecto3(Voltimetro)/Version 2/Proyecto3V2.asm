@@ -67,22 +67,14 @@ Comportamiento:
 
 ;===================================================================================
 loop:
-	MOVLW 0x01
-	call LCD_Comando
-	MOVLW 0x02
-	call LCD_Comando
 	MOVF PORTB,W			; W <- (PORTA) leer entrada en PORTA
-	ANDLW H'07'				; Se realiza un AND logico con H'07' (Mascara de bits)
+	ANDLW H'03'				; Se realiza un AND logico con H'03' (Mascara de bits)
 	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
 	goto Decimal			; Mostrar el voltaje en Decimal 			PORTB: 00
 	goto Hexadecimal		; Mostrar el voltaje en Hexadecimal 		PORTB: 01
 	goto Binario			; Mostrar el voltaje en binario 			PORTB: 10
 	goto Voltaje			; Mostrar el voltaje real 					PORTB: 11
 	
-	goto Comportamiento
-	goto Comportamiento
-
-
 Decimal
 	MOVLW 0x44			; D
 	CALL LCD_Datos
@@ -121,30 +113,35 @@ Voltaje:
 
 ;===============================================================================	
 MostrarBinario:
-	MOVLW h'08'
-	MOVWF RegAux4
-	MOVF ADRESH,W			; PASAMOS ADRESH A W PARA TENER EL VALOR DE LA CONVERSION
-	MOVWF RegAux3			; RegAux3=AdresH
+	MOVLW h'80'				;W=B'1000 0000'
+	MOVWF RegAux4			;RegAux4=W
 ImprimirBinario:
-	BTFSS RegAux3, 7
-	call ImprimeCero
-	call ImprimeUno
-	RLF RegAux3	
-	MOVLW b'00000001'		; W <- b'00000000'	
-	SUBWF RegAux4			; W <- RegAux4 - W
-	BTFSS STATUS, Z
-	GOTO ImprimirBinario
-	GOTO Comportamiento
-ImprimeCero:
-	MOVLW 0x00
-	GOTO LCD_Digito
-	return
-ImprimeUno:
-	MOVLW 0x01
-	GOTO LCD_Digito
-	return
+	MOVLW 0x00				;W=00
+	XORWF RegAux4,w			; RegAux4==00?
+	BTFSC STATUS,Z			; CHECAMOS LA BANDERA z
+	RETURN				 	; terminamos de imprimir ie RegAux4=00
+	MOVF RegAux4,W			;w=RegAux4
+	SUBWF RegAux2,W			; RegAux2-W->W
+	BTFSC STATUS,C			; Checamos la bandera Carry 
+	GOTO ImprimeUno			; Imprimimos 1
+	GOTO ImprimeCero		; Imprimimos 0
 
-;===============================================================================	
+ImprimeCero:
+	BCF STATUS,C			; LIMPIAMOS EL BIT CARRY
+	RRF RegAux4				; rotamos el regAux,4
+	MOVLW 0x00
+	CALL LCD_Digito
+	GOTO ImprimirBinario
+ImprimeUno:
+	MOVWF RegAux2			;RegAux2=W(RegAux2-RegAux4)
+	BCF STATUS,C			; LIMPIAMOS EL BIT CARRY
+	RRF RegAux4				; rotamos el regAux,4
+	MOVLW 0x01
+	CALL LCD_Digito
+	GOTO ImprimirBinario
+
+;===============================================================================;
+;Todo este bloque es para la puesta de x.xx V	
 Unidades:	SUBLW 0x32				; 0x32-W SI ES POSITIVO ENTONCES SE ENCUENTRA EN 0.X
 	BTFSC STATUS,C			; CHECAMOS EL CARRY SI ES 0 ENTONCES EL RESULTADO ES NEGATIVO W MAYOR
 	GOTO Write0Point		; Mandamos a escribir 0. en el LCD
