@@ -91,6 +91,8 @@
             this.MsgRec.Location = new System.Drawing.Point(35, 281);
             this.MsgRec.Multiline = true;
             this.MsgRec.Name = "MsgRec";
+            this.MsgRec.ReadOnly = true;
+            this.MsgRec.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.MsgRec.Size = new System.Drawing.Size(303, 141);
             this.MsgRec.TabIndex = 7;
             this.MsgRec.Visible = false;
