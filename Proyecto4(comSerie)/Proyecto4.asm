@@ -25,6 +25,7 @@ RegAux2 equ 0x26
 numero equ 0x25
 RegAux3 equ 0x30
 RegAux4 equ 0x31
+Apuntador equ 0x32
 
 	org 0					; vector de reset
 	goto inicio				; ve al inicio del programa
@@ -42,13 +43,19 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF TRISA 			; TRISA <- (W) configuramos PORTA como entrada
 	MOVLW H'FF'				; W <- h'FF' B'11111111' We need inputs for the dipswitch
 	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como entrada
-	MOVLW H'F8'				; W <- h'F8' B'11111000' WE NEEED THRRE OUTPUTS
+	MOVLW H'B8'				; W <- h'F8' B'10111000' WE NEEED FOUR OUTPUTS
 	MOVWF TRISC				; TRISC <- (W) configuramos PORTC como salida
 	MOVLW H'00'				; W <- h'00'
 	MOVWF TRISD				; TRISD <- (W) configuramos PORTD como salida
+	BSF TXSTA,BRGH		;damos transmision alta velocidad
+	MOVLW D'129'		;pasamos a w el valor que vamos a dar de baud rate
+	MOVWF SPBRG			;baud rate=9600
+	BCF TXSTA,SYNC		;comunicacion asincrona
+	BSF TXSTA,TXEN		;activamos la transmision
 	BCF STATUS,RP0			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 	MOVLW 0x81
 	MOVWF ADCON0
+	BSF RCSTA,SPEN		;habiliatamos el puerto serie
 
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
 Comportamiento:
@@ -82,7 +89,12 @@ Decimal
 	CALL LCD_Datos
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
+	MOVLW 'D'
+	CALL TransmitirDato
+	MOVLW "'"
+	CALL TransmitirDato
 	CALL ConversionDecimal
+	CALL TerminarLinea
 	GOTO Comportamiento
 
 Hexadecimal:
@@ -90,14 +102,24 @@ Hexadecimal:
 	CALL LCD_Datos		
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
+	MOVLW 'H'
+	CALL TransmitirDato
+	MOVLW "'"
+	CALL TransmitirDato
 	CALL MostrarHex
+	CALL TerminarLinea
 	GOTO Comportamiento
 Binario:
 	MOVLW 0x42			; B
 	CALL LCD_Datos
 	MOVLW 0x27	 		; '
 	CALL LCD_Datos
+	MOVLW 'B'
+	CALL TransmitirDato
+	MOVLW "'"
+	CALL TransmitirDato
 	CALL MostrarBinario
+	CALL TerminarLinea
 	GOTO Comportamiento
 
 Voltaje:
@@ -107,7 +129,74 @@ Voltaje:
 	CALL Decimales			; Mandamos a escribir lo que esta depues del punto decimal
 	MOVLW 0X56
 	CALL LCD_Datos
+	MOVLW 'V'
+	CALL TransmitirDato
+	CALL TerminarLinea
 	GOTO Comportamiento					; fin del programa
+;==========================================================================
+;AQUI VA LO NECESARIO PARA TRANSMITIR DATOS VIA PUERTO SERIE
+;Esta etiqueta debe de ser llamada
+;ES NECESARIO QUE W TENGA EL VALOR DEL DATO A ENVIAR PREVIAMENTE
+
+TransmitirDato:
+	MOVWF TXREG				;PONEMOS LO QUE TENGA W EN TXREG
+	BSF STATUS,RP0			;NOS MOVEMOS AL BANCO 01
+CheckTrans:	
+	BTFSS TXSTA,TRMT		;CHECAMOS SI LA TRANSMISION TERMINO
+	GOTO CheckTrans			;Nos regresamos en loop
+	BCF STATUS,RP0			;Nos regresamos al banco 00
+	RETURN	
+
+TerminarLinea:
+	MOVLW 0x0D
+	CALL TransmitirDato
+	MOVLW 0x0A
+	CALL TransmitirDato
+	RETURN
+;Transmitir numero nos permite mandar del simbolo 0 al F
+;W debe de contener el numero en Hex a transmitir
+TransmitirNumero:
+	CALL SelectNumber
+	CALL TransmitirDato
+	RETURN
+SelectNumber:
+	CLRF Apuntador
+	MOVWF Apuntador	;apuntador tiene ahora el valor de W
+	ADDWF Apuntador,w	;se agrega para las opciones de retorno y elegir un solo simbolo
+	ADDWF PCL
+	
+	MOVLW '0'
+	RETURN
+	MOVLW '1'
+	RETURN
+	MOVLW '2'
+	RETURN
+	MOVLW '3'
+	RETURN
+	MOVLW '4'
+	RETURN
+	MOVLW '5'
+	RETURN
+	MOVLW '6'
+	RETURN
+	MOVLW '7'
+	RETURN
+	MOVLW '8'
+	RETURN
+	MOVLW '9'
+	RETURN
+	MOVLW 'A'
+	RETURN
+	MOVLW 'B'
+	RETURN
+	MOVLW 'C'
+	RETURN
+	MOVLW 'D'
+	RETURN
+	MOVLW 'E'
+	RETURN
+	MOVLW 'F'
+	RETURN
 ;==========================================================================
 ConversionDecimal:
 centena: 
@@ -121,6 +210,8 @@ centena:
 Indecena:
 	MOVF RegAux3,w			;W= RegAux3 (centenar)
 	CALL LCD_Digito			; print Centenar
+	MOVF RegAux3,w
+	CALL TransmitirNumero
 	CLRF RegAux3			; Clear RegAux3 (Now we check D'10)
 decena:  
 	MOVLW 0x0A				;W=D'10
@@ -132,6 +223,8 @@ decena:
 	GOTO decena				;loop
 swap: MOVF RegAux3,w		;W=RegAux3 (Dec)
 	CALL LCD_Digito			;Print Dec
+	MOVF RegAux3,w
+	CALL TransmitirNumero
 	CLRF RegAux3			;Clear RegAux3 (Now we Check Units)
 unidad: MOVLW 0x01			;w=D'1'
 	SUBWF RegAux2,w			;W=RegAux2-D'1
@@ -143,6 +236,8 @@ unidad: MOVLW 0x01			;w=D'1'
 finDecimal
 	MOVF RegAux3,w			;w=RegAux3  (unit)
 	CALL LCD_Digito			;Print Units
+	MOVF RegAux3,w
+	CALL TransmitirNumero
 	RETURN					; we have finished this procedure
 ;==========================================================================
 MostrarHex:
@@ -154,6 +249,9 @@ MostrarHex:
 	MOVWF RegAux2			;RegAux2=W
 	GOTO MostrarHex			;loop	
 PHPart:
+	MOVF RegAux3,w			;w=regAux3
+	CALL TransmitirNumero	;para mandarlo por puerto serie
+
 	MOVLW 0x0A				;W=D'9 to check if we to print a number or letter
 	SUBWF RegAux3,W			;w=RegAux3-D'9
 	BTFSS STATUS,C			;CHECK CARRY
@@ -175,6 +273,8 @@ Lowpart:
 	MOVWF RegAux2			;RegAux2=w
 	GOTO Lowpart
 PLPart:
+	MOVF RegAux3,w			;w=regAux3
+	CALL TransmitirNumero	;para mandarlo por puerto serie
 	MOVLW 0x0A				;W=D'9 to check if we to print a number or letter
 	SUBWF RegAux3,W			;w=RegAux3-D'9
 	BTFSS STATUS,C			;CHECK CARRY
@@ -206,13 +306,17 @@ ImprimeCero:
 	RRF RegAux4				; rotamos el regAux,4
 	MOVLW 0x00
 	CALL LCD_Digito
+	MOVLW '0'
+	CALL TransmitirDato
 	GOTO ImprimirBinario
 ImprimeUno:
 	MOVWF RegAux2			;RegAux2=W(RegAux2-RegAux4)
 	BCF STATUS,C			; LIMPIAMOS EL BIT CARRY
 	RRF RegAux4				; rotamos el regAux,4
 	MOVLW 0x01
-	CALL LCD_Digito
+	CALL LCD_Digito	
+	MOVLW '1'
+	CALL TransmitirDato
 	GOTO ImprimirBinario
 
 ;===============================================================================;
@@ -248,6 +352,8 @@ Nxt:
 	ADDWF RegAux2,F         ;f=f+5 para regresar al valor positivo
 	MOVF numero,W			;w=numero
 	CALL LCD_Digito			;se manda a imprimir el numero al LCD
+	MOVF numero,W
+	CALL TransmitirNumero
 	CLRF numero				;limpiamos Reg numero
 LoopDec: 
 	MOVLW 0x01
@@ -260,6 +366,8 @@ LoopDec:
 add2:			
 	MOVF numero,W
 	CALL LCD_Digito	
+	MOVF numero,W
+	CALL TransmitirNumero
 	Return
 ;==============================================================================
 ;AQUI PONDREMOS LAS FUNCIONES PARA ESCRIBIR AL LCD LOS NUMEROS 
@@ -268,6 +376,10 @@ Write0Point:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '0'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVF ADRESH,W			; REGRESAMOS A W EL DATO DE LA CONVERSION A/D
 	RETURN
 Write1Point:
@@ -277,6 +389,10 @@ Write1Point:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '1'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVF ADRESH,W			; REGRESAMOS A W EL DATO DE LA CONVERSION A/D
 	RETURN
 Write2Point:
@@ -286,6 +402,10 @@ Write2Point:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '2'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVF ADRESH,W			; REGRESAMOS A W EL DATO DE LA CONVERSION A/D
 	RETURN
 Write3Point:
@@ -295,6 +415,10 @@ Write3Point:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '3'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVF ADRESH,W			; REGRESAMOS A W EL DATO DE LA CONVERSION A/D
 	RETURN
 Write4Point:
@@ -304,6 +428,10 @@ Write4Point:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '4'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVF ADRESH,W			; REGRESAMOS A W EL DATO DE LA CONVERSION A/D
 	RETURN
 Write5P0:	
@@ -311,6 +439,10 @@ Write5P0:
 	CALL LCD_Datos 			;Mandamos el dato al LCD
 	MOVLW 0x2E				;Pasamos el codigo del caracter .
 	CALL LCD_Datos			;Mandamos el dato al LCD
+	MOVLW '5'
+	CALL TransmitirDato
+	MOVLW '.'
+	CALL TransmitirDato
 	MOVLW 0x00
 	MOVWF RegAux2
 	RETURN

@@ -1,0 +1,10 @@
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\bin\Debug\DisplayComunicacionSerie.exe.config
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\bin\Debug\DisplayComunicacionSerie.exe
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\bin\Debug\DisplayComunicacionSerie.pdb
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.csprojAssemblyReference.cache
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.Form1.resources
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.Properties.Resources.resources
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.csproj.GenerateResource.cache
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.csproj.CoreCompileInputs.cache
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.exe
+Z:\Istanolion\Documents\2020-2\Micros\MICROS\Proyecto4(comSerie)\DisplayComunicacionSerie\obj\Debug\DisplayComunicacionSerie.pdb
