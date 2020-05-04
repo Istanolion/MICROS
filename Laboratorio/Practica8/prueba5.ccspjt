@@ -23,7 +23,7 @@ t3=1
 Count=3
 
 [ProjectLog]
-Days=1
+Days=2
 D1=06-04-2020
 D1_L=4
 D1_L1=[39014]Stopped Editing.
@@ -34,6 +34,13 @@ TotalDebug=0
 D1_E=47
 D1_D=0
 D1_L4=[40875]Project Closed.
+D2=30-04-2020
+D2_L=2
+D2_L1=[41845]Project Opened.
+D2_L2=[41909]Project Closed.
 [Units]
 Count=1
 1=prueba5 (main)
+
+[fileformats]
+forcecoff=0

@@ -1,0 +1,62 @@
+
+ROM used:   427/8192 (5%)
+            2049/8192 (25%) including unused fragments
+
+            0.6 Average locations per line
+            17.1 Average locations per statement
+
+RAM used:   27/368 (7%) at main() level
+            34/368 (9%) worst case
+
+Stack used: 2 worst case (0 in main + 2 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   48    25 100  Prueba4.c
+  664     0   0  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877.h
+----- -----
+  712    25 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+0     22   5    1             @delay_ms1
+3      1   0    0      5  1.0  loader16F877
+0     84  20    0    290  2.2  port_rb
+0      7   2    0    482  3.7  @const671
+0     88  21    4             @PSTRINGC7_9600_62_63
+0      9   2    0    482  3.7  @const676
+0      7   2    0    482  3.7  @const677
+0      9   2    0             @const678
+0      7   2    0             @const679
+0      9   2    0             @const680
+0      7   2    0             @const681
+0      9   2    0             @const682
+0     83  19    1    260  2.2  MAIN
+0      6   1    0             @const686
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               6
+    Statements              25
+    Comments                119
+    Volume (V)              2885
+    Difficulty (D)          15.8
+    Effort to implement (E) 45470
+    Time to implement (T)   42 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   4
+    Maintainability (MI)    145
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-0004E    75  0  
+0004F-007FF   347  1622  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01EFF     0  1792  
+01F00-01FFF     1  255  
+
+
+

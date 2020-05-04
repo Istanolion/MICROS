@@ -1,0 +1,66 @@
+
+ROM used:   1275/8192 (16%)
+            2049/8192 (25%) including unused fragments
+
+            1.8 Average locations per line
+            58.0 Average locations per statement
+
+RAM used:   26/368 (7%) at main() level
+            53/368 (14%) worst case
+
+Stack used: 2 worst case (0 in main + 2 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   42    22 100  Prueba2.c
+  664     0   0  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877.h
+----- -----
+  706    22 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+0     22   2    1             @delay_ms1
+3      1   0    0      5  1.0  loader16F877
+0    539  42    4    246  4.8  clock_isr
+0     11   1    0    438  3.7  @const671
+ Inline         4             @PSTRINGC7_9600_62_63
+0     21   2    3             @DIV88
+ Inline         2             @PRINTF_U_9600_62_63
+0      4   0    0             @const683
+0     89   7    5             @PSTRINGCN7_9600_62_63
+ Inline         2             @PRINTF_X_9600_62_63
+ Inline         2             @ITOF
+0    117   9   13             @MULFF
+ Inline        14             @DIVFF
+0      4   0    0             @const697
+ Inline         5             @FTOSD
+0     79   6   13             @DIV3232
+0    230  18   13             @PRINTF_L32D_9600_62_63FPFPF
+0     79   6    1    265  2.8  MAIN
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               4
+    Statements              22
+    Comments                121
+    Volume (V)              1286
+    Difficulty (D)          10.6
+    Effort to implement (E) 13629
+    Time to implement (T)   13 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    153
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-0004E    75  0  
+0004F-007FF  1195  774  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01EFF     0  1792  
+01F00-01FFF     1  255  
+
+
+

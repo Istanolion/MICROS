@@ -1,0 +1,24 @@
+[PROJECT]
+Target=Prueba3.hex
+Processor_Text=PIC16F877
+CCSVersion=5.094d
+Compiler=PCM
+[Target Data]
+FileList=Prueba3.c
+[Prueba3.c]
+Type=4
+[mru-list]
+1=Prueba3.c
+[Units]
+Count=1
+1=Prueba3 (main)
+
+[defines]
+buildcount=1
+
+[ProjectLog]
+Days=1
+D1=04-05-2020
+D1_L=2
+D1_L1=[41857]Started Editing.
+D1_L2=[41954]Project Closed.

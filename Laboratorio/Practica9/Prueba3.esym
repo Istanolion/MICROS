@@ -1,10 +1,10 @@
-F N "MAIN" 0 5 ""
-D G "__PCM__" 0 14 ""5.094d""
-D G "__DEVICE__" 0 14 "877"
-D G "__DATE__" 0 14 ""4-May-20""
-D G "__TIME__" 0 14 ""10:43:25""
-D G "_UNICODE" 0 14 ""?""
-D G "__EVAL" 0 14 ""?"" "Standard Header file for the PIC16F877 device ////////////////"
+F N "MAIN" 0 27 ""
+D G "__PCM__" 0 44 ""5.094d""
+D G "__DEVICE__" 0 44 "877"
+D G "__DATE__" 0 44 ""4-May-20""
+D G "__TIME__" 0 44 ""11:35:25""
+D G "_UNICODE" 0 44 ""?""
+D G "__EVAL" 0 44 ""?"" "Standard Header file for the PIC16F877 device ////////////////"
 c L "set_tris_a" 1 3 6 "FUNCTION"
 f N "set_tris_a" 1 37 ""
 v L "value" 1 37 "int8" `54 
@@ -1100,13 +1100,21 @@ d G "INT_PSP" 1 658 "0x008C80"
 d G "INT_BUSCOL" 1 659 "0x008D08"
 d G "INT_EEPROM" 1 660 "0x008D10"
 d G "INT_TIMER0" 1 661 "0x000B20"
-F N "loader16F877" 0 4 ""
-F G "loader16F877" 0 4 "void()" `663 
-F N "MAIN" 0 5 ""
-F G "MAIN" 0 5 "void()" `664 
-C L "MAIN" 0 7 1 "FUNCTION"
-C L "MAIN" 0 7 1 "FUNCTION"
-C L "MAIN" 0 7 1 "FUNCTION"
+C L "jump_to_isr" 0 6 1 "FUNCTION"
+F N "loader16F877" 0 7 ""
+F G "loader16F877" 0 7 "void()" `666  "for the 8k 16F876/7"
+V G "interr" 0 9 "int16" `667 
+V G "valAn" 0 10 "int8" `668 
+V G "var" 0 11 "float" `669 
+F N "clock_isr" 0 14 ""
+F G "clock_isr" 0 14 "int8()" `670 
+F N "MAIN" 0 23 ""
+F G "MAIN" 0 23 "void()" `676 
+C L "MAIN" 0 6 1 "FUNCTION"
+C L "MAIN" 0 6 1 "FUNCTION"
+C L "MAIN" 0 6 1 "FUNCTION"
+C L "MAIN" 0 6 1 "FUNCTION"
+C L "MAIN" 0 6 1 "FUNCTION"
 F B "reset_cpu" 0 0
 F B "abs" 1 0
 F B "sleep" 0 0
@@ -1237,3 +1245,10 @@ F B "spi_write2" 1 2
 F B "spi_data_is_in2" 0 0
 F B "delay_ms" 1 0
 F B "delay_us" 1 0
+F B "putchar" 1 2
+F B "puts" 1 2
+F B "getch" 0 1
+F B "gets" 1 3
+F B "kbhit" 0 1
+F B "set_uart_speed" 1 3
+F B "setup_uart" 1 3

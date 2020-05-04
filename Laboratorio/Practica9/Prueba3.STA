@@ -1,0 +1,67 @@
+
+ROM used:   1327/8192 (16%)
+            2049/8192 (25%) including unused fragments
+
+            1.9 Average locations per line
+            57.7 Average locations per statement
+
+RAM used:   30/368 (8%) at main() level
+            56/368 (15%) worst case
+
+Stack used: 3 worst case (1 in main + 2 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+   44    23 100  Prueba3.c
+  664     0   0  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16f877.h
+----- -----
+  708    23 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+0     22   2    1             @delay_ms1
+3      1   0    0      5  1.0  loader16F877
+0     25   2    0     83  2.8  clock_isr
+0     18   1    0    438  3.7  @const671
+0     88   7    4             @PSTRINGC7_9600_62_63
+0    209  16    4    482  3.7  MAIN
+0     11   1    0             @const679
+0     21   2    3             @DIV88
+0     58   4    2             @PRINTF_U_9600_62_63
+0      4   0    0             @const687
+0     89   7    5             @PSTRINGCN7_9600_62_63
+0     37   3    2             @PRINTF_X_9600_62_63
+0     31   2    2             @ITOF
+0    117   9   13             @MULFF
+0    204  15   14             @DIVFF
+0      4   0    0             @const701
+ Inline         5             @FTOSD
+0     79   6   13    265  2.8  @DIV3232
+0    230  17   13    265  2.8  @PRINTF_L32D_9600_62_63FPFPF
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               6
+    Statements              23
+    Comments                121
+    Volume (V)              2230
+    Difficulty (D)          15.8
+    Effort to implement (E) 35263
+    Time to implement (T)   33 minutes
+    Est Delivered Bugs (B)  0
+    Cyclomatic Complexity   1
+    Maintainability (MI)    150
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-0004E    75  0  
+0004F-007FF  1247  722  
+00800-00FFF     0  2048  
+01000-017FF     0  2048  
+01800-01EFF     0  1792  
+01F00-01FFF     1  255  
+
+
+

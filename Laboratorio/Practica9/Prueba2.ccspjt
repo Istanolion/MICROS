@@ -1,0 +1,23 @@
+[PROJECT]
+Target=Prueba2.hex
+Processor_Text=PIC16F877
+CCSVersion=5.094d
+Compiler=PCM
+[Target Data]
+FileList=Prueba2.c
+[Prueba2.c]
+Type=4
+[mru-list]
+1=Prueba2.c
+[Units]
+Count=1
+1=Prueba2 (main)
+
+[defines]
+buildcount=1
+
+[ProjectLog]
+Days=1
+D1=04-05-2020
+D1_L=1
+D1_L1=[41718]Project Closed.

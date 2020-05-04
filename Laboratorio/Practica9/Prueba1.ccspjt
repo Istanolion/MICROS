@@ -1,0 +1,41 @@
+[PROJECT]
+Target=Prueba1.hex
+Processor_Text=PIC16F877
+CCSVersion=5.094d
+Compiler=PCM
+[Target Data]
+FileList=Prueba1.c
+[Prueba1.c]
+Type=4
+[mru-list]
+1=Prueba1.c
+
+[defines]
+buildcount=3
+
+[ProjectLog]
+Days=1
+D1=04-05-2020
+D1_L=5
+D1_L1=[39185]Stopped Editing.
+TotalEdit=1
+TotalDebug=0
+D1_E=1
+D1_D=0
+D1_L2=[39609]Project Closed.
+D1_L3=[40966]Project Opened.
+D1_L4=[40970]Started Editing.
+D1_L5=[41272]Project Closed.
+
+[fileformats]
+forcecoff=0
+
+[Opened Files]
+1=Prueba1.c
+t1=5
+Count=2
+2=..\Practica8\prueba3.c
+t2=1
+[Units]
+Count=1
+1=Prueba1 (main)
