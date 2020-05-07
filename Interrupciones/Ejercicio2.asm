@@ -11,7 +11,7 @@ INICIO
 	BCF STATUS,6			; Para cambiar al banco 1
 	CLRF TRISB				; Limpiamos TRISB para definir PORTB como salidas
 	MOVLW B'00000111'		; W <- B'00000111'
-	MOVWF OPTION_REG		; Temporizador, flanco de bajada, Pre-divisor del TMR0 = 256
+	MOVWF OPTION_REG		; Temporizador
 	BCF STATUS,5			; Cambiamos al banco 1
 	BCF INTCON,T0IF			; Bandera de estado del TIMER0. No ha ocurrido desbordamiento
 	BSF INTCON,T0IE			; Habilita interrupción por desbordamiento del TIMER0
@@ -30,7 +30,7 @@ INTERRUPCIONES
 	COMF PORTB				; Si da 0, Haz el complemento de PORTB
 	CLRF CONTADOR			
 SAL_INT						
-	BCF INTCON,T0IF			; Bandera de estado del TIMER0. No ha ocurrido desbordamiento
+	BCF INTCON,T0IF			; Bandera de estado del TIMER0.
 SAL_NO_FUE_TMR0				
 	RETFIE					; Sale de la interrupcion
 	END						
