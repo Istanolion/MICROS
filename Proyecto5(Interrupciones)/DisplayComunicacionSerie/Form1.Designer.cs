@@ -35,7 +35,6 @@
             this.BaudRate = new System.Windows.Forms.ComboBox();
             this.MsgRec = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.Close = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -108,25 +107,12 @@
             this.label3.Text = "Mensajes Recibidos";
             this.label3.Visible = false;
             // 
-            // Close
-            // 
-            this.Close.Enabled = false;
-            this.Close.Location = new System.Drawing.Point(141, 210);
-            this.Close.Name = "Close";
-            this.Close.Size = new System.Drawing.Size(75, 23);
-            this.Close.TabIndex = 9;
-            this.Close.Text = "CLOSE";
-            this.Close.UseVisualStyleBackColor = true;
-            this.Close.Visible = false;
-            this.Close.Click += new System.EventHandler(this.Close_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(362, 450);
-            this.Controls.Add(this.Close);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.MsgRec);
             this.Controls.Add(this.BaudRate);
@@ -151,7 +137,6 @@
         private System.Windows.Forms.ComboBox BaudRate;
         private System.Windows.Forms.TextBox MsgRec;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button Close;
     }
 }
 
