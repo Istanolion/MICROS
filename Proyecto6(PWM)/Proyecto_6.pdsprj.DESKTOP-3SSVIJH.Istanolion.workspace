@@ -6,12 +6,11 @@
  </FRAME>
  <MODULE name="VSMDEBUG">
   <PWI>
-   <POPUP w="824" x="4" flags="00000002" y="103" h="254" pid="0" iid="-1">
+   <POPUP w="1912" x="4" flags="00000002" y="881" h="171" pid="0" iid="-1">
     <PROPERTIES>
-     <ITEM name="Message Column Width">689</ITEM>
+     <ITEM name="Message Column Width">1777</ITEM>
      <ITEM name="ShowGrid">No</ITEM>
      <ITEM name="Source Column Width">100</ITEM>
-     <ITEM name="Time Column Width">120</ITEM>
      <ITEM name="Version">100</ITEM>
     </PROPERTIES>
    </POPUP>
@@ -31,6 +30,9 @@
      <ITEM name="Watch Expression Column Width">87</ITEM>
      <ITEM name="nItems">0</ITEM>
     </PROPERTIES>
+   </POPUP>
+   <POPUP w="695" x="273" flags="00000000" y="579" h="453" pid="0" iid="8">
+    <PROPERTIES/>
    </POPUP>
    <POPUP w="52" x="4" flags="00000048" y="103" h="13" pid="3" iid="1">
     <PROPERTIES/>
@@ -68,7 +70,7 @@
    <POPUP w="14" x="4" flags="00000008" y="103" h="8" pid="7" iid="1">
     <PROPERTIES/>
    </POPUP>
-   <POPUP w="8" x="177" flags="00000002" y="268" h="8" pid="8" iid="1">
+   <POPUP w="8" x="197" flags="00000002" y="288" h="8" pid="8" iid="1">
     <PROPERTIES>
      <ITEM name="DataType">2</ITEM>
      <ITEM name="DispChars">Yes</ITEM>

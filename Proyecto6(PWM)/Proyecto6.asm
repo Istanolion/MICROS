@@ -66,6 +66,8 @@ inicio 						; Etiqueta de inicio de programa
 	BCF TXSTA,SYNC		;comunicacion asincrona
 	BSF TXSTA,TXEN		;activamos la transmision
 	BCF STATUS,RP0			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
+	MOVLW 0x81
+	MOVWF ADCON0
 	MOVLW B'00001100'	;LOAD THE VALUE TO W
 	MOVWF CCP2CON		;PUT W TO CCP2CONFIGURATION, setting to work as PWM
 	MOVLW B'00000111'	;PUT THE VALUE TO W
@@ -73,8 +75,7 @@ inicio 						; Etiqueta de inicio de programa
 	MOVLW 0x00			;PUT THE VALUE TO W
 	MOVWF CCPR2L		;SET CCPR2L WITH THE VALUE W HAS, initializing the 8 MsB of PWM, setting the duty cicle
 
-	MOVLW 0x81
-	MOVWF ADCON0
+
 	BSF RCSTA,SPEN		;habiliatamos el puerto serie
 	CALL Renicia_Timer1
 	CLRF PIR1
@@ -92,12 +93,7 @@ Comportamiento:
 	call LCD_Comando
 	MOVLW 0x02
 	call LCD_Comando
-	BSF ADCON0,2			; EMPEZAMOS LA CONVERSION A/D
-	CALL Retardo_20_micro
-	BTFSC	ADCON0,2		; CHECAMOS SI SE TERMINO LA CONVERSION A/D
-	GOTO Comportamiento		; SE REGRESA EN CASO DE QUE NO SE HAYA ACABADO
-	MOVF ADRESH,W			; PASAMOS ADRESH A W PARA TENER EL VALOR DE LA CONVERSION
-	MOVWF RegAux
+
 
 
 ;===================================================================================
@@ -111,7 +107,17 @@ automatico:
 	BSF T1CON,TMR1ON
 	GOTO Comportamiento
 manual:
-	BCF T1CON,TMR1ON
+	BCF T1CON,TMR1ON		;Apagamos el timer1
+	CALL Renicia_Timer1		;Reiniciamos el Timer
+	CLRF ContadorL			;limpiamos el contador de desborde
+	BSF ADCON0,2			; EMPEZAMOS LA CONVERSION A/D
+check:	
+	BTFSC	ADCON0,2		; CHECAMOS SI SE TERMINO LA CONVERSION A/D
+	GOTO check				; SE REGRESA EN CASO DE QUE NO SE HAYA ACABADO
+	MOVF ADRESH,W			; PASAMOS ADRESH A W PARA TENER EL VALOR DE LA CONVERSION
+	MOVWF CCPR2L			; EL RESULTADO DE LA CONVERSION ES AHORA EL DUTY CYCLE
+	
+	
 	GOTO Comportamiento
 ;==========================================================================
 ;AQUI VA LO NECESARIO PARA TRANSMITIR DATOS VIA PUERTO SERIE

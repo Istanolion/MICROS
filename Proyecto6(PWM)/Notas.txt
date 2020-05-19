@@ -1,0 +1,6 @@
+Notas se aumenta en la opcion automatica 3.9 m% (aproximadamente) el ciclo de trabajo cada segundo, es decir se aumenta en 1 el registro CCPR2L
+el cual tiene los 8 bits más siginicativos que maneja el duty cicle.
+
+Por la logica de programacion (aumento/decremento luego checo si llegue a ff/00) si de la opcion manual lo ponemos en FF//00 y el flag estaba para 
+incrementarse se regresa a cero y continua hasta topar con ff
+Decrementarse se pasa a FF y continua hasta topar con 00
