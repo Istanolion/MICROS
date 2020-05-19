@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <WORKSPACE>
  <FRAME activewindow="0">
-  <PLACEMENT>2c0000000200000003000000ffffffffffffffffffffffffffffffffaf0200009e010000a206000038040000</PLACEMENT>
+  <PLACEMENT>2c00000002000000030000000083ffff0083ffffffffffffffffffff520200006300000045060000fd020000</PLACEMENT>
   <WINDOW type="default" module="ISIS"/>
   <WINDOW type="default" module="VSMSTUDIO">
    <STATE NAME="EDIT" VALUE="AAAA/wAAAAH9AAAAAgAAAAAAAAEAAAAC8fwCAAAAAfsAAAAQAFAAcgBvAGoAZQBjAHQAcwEAAAAAAAAC8QAAASwA////AAAAAwAAB3gAAADW/AEAAAAB+wAAACAATwB1AHQAcAB1AHQARABvAGMAawBXAGkAZABnAGUAdAEAAAAAAAAHeAAAAEcA////AAAGdAAAAvEAAAAEAAAABAAAAAgAAAAI/AAAAAA="/>
@@ -15,7 +15,6 @@
      <ITEM name="Message Column Width">281</ITEM>
      <ITEM name="ShowGrid">No</ITEM>
      <ITEM name="Source Column Width">100</ITEM>
-     <ITEM name="Time Column Width">120</ITEM>
      <ITEM name="Version">100</ITEM>
     </PROPERTIES>
    </POPUP>
@@ -35,6 +34,9 @@
      <ITEM name="Watch Expression Column Width">87</ITEM>
      <ITEM name="nItems">0</ITEM>
     </PROPERTIES>
+   </POPUP>
+   <POPUP w="695" x="825" flags="00008001" y="454" h="453" pid="0" iid="2">
+    <PROPERTIES/>
    </POPUP>
    <POPUP w="52" x="4" flags="00000048" y="103" h="13" pid="3" iid="1">
     <PROPERTIES/>
@@ -72,7 +74,7 @@
    <POPUP w="14" x="4" flags="00000008" y="103" h="8" pid="7" iid="1">
     <PROPERTIES/>
    </POPUP>
-   <POPUP w="8" x="178" flags="00000002" y="305" h="8" pid="8" iid="1">
+   <POPUP w="8" x="197" flags="00000002" y="288" h="8" pid="8" iid="1">
     <PROPERTIES>
      <ITEM name="DataType">2</ITEM>
      <ITEM name="DispChars">Yes</ITEM>
