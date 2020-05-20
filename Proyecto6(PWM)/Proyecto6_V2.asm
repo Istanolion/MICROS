@@ -110,6 +110,7 @@ automatico:
 	MOVWF RegAux			;
 	CALL ImprimirSimbolos	; 
 
+	GOTO Comportamiento
 manual:
 	BCF T1CON,TMR1ON		; Apagamos el timer1
 	CALL Renicia_Timer1		; Reiniciamos el Timer
@@ -414,7 +415,7 @@ ImprimirSimbolos
 	BTFSC STATUS, C				;  Si cumple con la condicion
 	CALL PrintOcho				;  Imprime el simbolo correspondiente
 
-	CALL PrintCero							
+				
 	GOTO Comportamiento			; Si no es ningun caso, regresa al inicio
 
 
