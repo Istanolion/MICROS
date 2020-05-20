@@ -27,6 +27,10 @@ ContadorL equ 0x34	;cuantas veces se ha desbordado timer1
 STATUSAUX equ 0x35	;guardar el status mientras la interrupcion
 WAUX equ 0x36		;guardar w mientras la interrupcion
 
+ContadorAutomatico equ 0x37 
+
+
+
 	org 0					; vector de reset
 	goto inicio				; ve al inicio del programa
 
@@ -88,6 +92,8 @@ inicio 						; Etiqueta de inicio de programa
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
 	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
 
+	MOVLW 0x00					; Iniciamos el contador para el modo automatico
+	MOVWF ContadorAutomatico 	; en 0
 Comportamiento:
 	MOVLW 0x01
 	call LCD_Comando
@@ -105,10 +111,10 @@ loop:
 	GOTO manual
 automatico:
 	BSF T1CON,TMR1ON
-
-	MOVF ADRESH, W 			; Leemos el resultado de la conversion del registro ADRESH
-	MOVWF RegAux			;
-	CALL ImprimirSimbolos	; 
+	INCF ContadorAutomatico 		; Incrementamos el contador
+	MOVF ContadorAutomatico, W 		; Leemos el resultado de la conversion del registro ADRESH
+	MOVWF RegAux					;
+	CALL ImprimirSimbolos			; 
 
 	GOTO Comportamiento
 manual:
