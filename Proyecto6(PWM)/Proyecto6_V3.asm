@@ -1,8 +1,15 @@
-	processor 16f877		; micro a usar
+;Universidad Nacional Autonoma de Mexico
+;Materia: Microcomputadoras
+;Proyecto 6
+;Alumnos:
+;Garciarebollo Rojas Diego Inaki
+;Vega López Amós Manuel
+
+	processor 16f877	; micro a usar
 	include<p16f877.inc>	; libreria para ocupar nombres de registros
 
 ;Retardo 1 Segundo
-valor1 equ h'21'			; registros a ocupar para la subrutina de retardo
+valor1 equ h'21'		; registros a ocupar para la subrutina de retardo
 valor2 equ h'22'	
 valor3 equ h'23'
 cte1 equ 0XD7
