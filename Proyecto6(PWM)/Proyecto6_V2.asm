@@ -377,47 +377,50 @@ ImprimirSimbolos
 	MOVLW D'0'					; Si tiene el valor igual a 0
 	SUBWF RegAux,W				; Resta de comprobacion
 	BTFSC STATUS, Z				; Si cumple con la condicion
-	CALL PrintCero				; Imprime el simbolo correspondiente
-								
-	MOVLW D'32'					; Si tiene el valor igual o menor a  32
-	SUBWF RegAux,W				; Resta de comprobacion
-	BTFSC STATUS, C				; Si cumple con la condicion
-	CALL PrintUno				; Imprime el simbolo correspondiente
-								
-	MOVLW D'64'					;  Si tiene el valor igual o menor a  64
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintDos				;  Imprime el simbolo correspondiente
-
-	MOVLW D'96'					;  Si tiene el valor igual o menor a  96
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintTres				;  Imprime el simbolo correspondiente
-
-	MOVLW D'128'				;  Si tiene el valor igual o menor a  128
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintCuatro			;  Imprime el simbolo correspondiente
-
-	MOVLW D'160'				;  Si tiene el valor igual o menor a  160
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintCinco				;  Imprime el simbolo correspondiente
-
-	MOVLW D'192'				;  Si tiene el valor igual o menor a  192
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintSeis				;  Imprime el simbolo correspondiente
-
-	MOVLW D'224'				;  Si tiene el valor igual o menor a  224
-	SUBWF RegAux,W				;  Resta de comprobacion
-	BTFSC STATUS, C				;  Si cumple con la condicion
-	CALL PrintSiete				;  Imprime el simbolo correspondiente
+	GOTO PrintCero				; Imprime el simbolo correspondiente
 
 	MOVLW D'255'				;  Si tiene el valor igual o menor a  255
 	SUBWF RegAux,W				;  Resta de comprobacion
 	BTFSC STATUS, C				;  Si cumple con la condicion
+	GOTO PrintCien				;  Imprime el simbolo correspondiente
+	
+	CALL PrintUno						
+	MOVLW D'32'					; Si tiene el valor igual o menor a  32
+	SUBWF RegAux,W				; Resta de comprobacion
+	BTFSC STATUS, C				; Si cumple con la condicion
+	CALL PrintDos				; Imprime el simbolo correspondiente
+								
+	MOVLW D'64'					;  Si tiene el valor igual o menor a  64
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
+	CALL PrintTres				;  Imprime el simbolo correspondiente
+
+	MOVLW D'96'					;  Si tiene el valor igual o menor a  96
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
+	CALL PrintCuatro				;  Imprime el simbolo correspondiente
+
+	MOVLW D'128'				;  Si tiene el valor igual o menor a  128
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
+	CALL PrintCinco				;  Imprime el simbolo correspondiente
+
+	MOVLW D'160'				;  Si tiene el valor igual o menor a  160
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
+	CALL PrintSeis				;  Imprime el simbolo correspondiente
+
+	MOVLW D'192'				;  Si tiene el valor igual o menor a  192
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
+	CALL PrintSiete				;  Imprime el simbolo correspondiente
+
+	MOVLW D'224'				;  Si tiene el valor igual o menor a  224
+	SUBWF RegAux,W				;  Resta de comprobacion
+	BTFSC STATUS, C				;  Si cumple con la condicion
 	CALL PrintOcho				;  Imprime el simbolo correspondiente
+
+
 
 				
 	GOTO Comportamiento			; Si no es ningun caso, regresa al inicio
@@ -428,7 +431,16 @@ ImprimirSimbolos
 PrintCero
 	MOVLW 0x30
 	CALL LCD_Datos
-	return
+	GOTO Comportamiento
+
+PrintCien
+	MOVLW 0x31
+	CALL LCD_Datos
+	MOVLW 0x30
+	CALL LCD_Datos
+	MOVLW 0x30
+	CALL LCD_Datos
+	GOTO Comportamiento
 
 PrintUno
 	MOVLW 0x00
