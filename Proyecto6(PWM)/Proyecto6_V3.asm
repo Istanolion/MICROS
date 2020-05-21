@@ -680,7 +680,7 @@ MandaSiete
 	CALL TransmitirDato
 	MOVLW ' '
 	CALL TransmitirDato
-	MOVLW '8'
+	MOVLW '7'
 	CALL TransmitirDato
 	CALL TerminarLinea
 	GOTO VolverDeTerminal
