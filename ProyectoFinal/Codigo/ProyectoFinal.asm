@@ -30,11 +30,20 @@ WAUX equ 0x36		;guardar w mientras la interrupcion
 Contrasena1 equ 0x37	;guardar 1 digito de la contraseña
 Contrasena2 equ 0x38	;guardar 2 digito de la contraseña
 Contrasena3 equ 0x39	;guardar 3 digito de la contraseña
-Contrasena4 equ 0x40	;guardar 4 digito de la contraseña
-Contrasena5 equ 0x40	;guardar 5 digito de la contraseña
-Contrasena6 equ 0x40	;guardar 6 digito de la contraseña
-Contrasena7 equ 0x40	;guardar 7 digito de la contraseña
-Contrasena8 equ 0x40	;guardar 8 digito de la contraseña
+Contrasena4 equ 0x3A 	;guardar 4 digito de la contraseña
+Contrasena5 equ 0x3B	;guardar 5 digito de la contraseña
+Contrasena6 equ 0x3C	;guardar 6 digito de la contraseña
+Contrasena7 equ 0x3D	;guardar 7 digito de la contraseña
+Contrasena8 equ 0x3E	;guardar 8 digito de la contraseña
+
+ContrasenaIngresada1 equ 0x3F	;guardar 1 digito de la contraseña
+ContrasenaIngresada2 equ 0x40	;guardar 2 digito de la contraseña
+ContrasenaIngresada3 equ 0x41	;guardar 3 digito de la contraseña
+ContrasenaIngresada4 equ 0x42 	;guardar 4 digito de la contraseña
+ContrasenaIngresada5 equ 0x43	;guardar 5 digito de la contraseña
+ContrasenaIngresada6 equ 0x44	;guardar 6 digito de la contraseña
+ContrasenaIngresada7 equ 0x45	;guardar 7 digito de la contraseña
+ContrasenaIngresada8 equ 0x46	;guardar 8 digito de la contraseña
 
 ;===============================================================================
 
