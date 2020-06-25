@@ -222,7 +222,7 @@ PrintMensajeBienvenida
 	CALL LCD_Datos
 	GOTO Comportamiento
 
-PrintOpciones
+PrintIngresarContrasena
 	MOVLW 0x01
 	call LCD_Comando
 	MOVLW 0x02
