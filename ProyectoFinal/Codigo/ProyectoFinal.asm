@@ -233,7 +233,25 @@ PrintContrasenaIncorrecta
 	GOTO Comportamiento
 
 PrintAbierto
-
+	MOVLW 0x01
+	call LCD_Comando
+	MOVLW 0x02
+	call LCD_Comando
+	MOVLW 0x41
+	CALL LCD_Datos
+	MOVLW 0x62
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x72
+	CALL LCD_Datos
+	MOVLW 0x74
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	GOTO Comportamiento
 
 
 ; =============================================================================
