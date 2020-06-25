@@ -199,9 +199,33 @@ PrintAsterisco
 	GOTO Comportamiento
 
 PrintMensajeBienvenida
-	MOVLW 0x2A
+	MOVLW 0x42
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x6E
+	CALL LCD_Datos
+	MOVLW 0x76
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW 0x6E
+	CALL LCD_Datos
+	MOVLW 0x69
+	CALL LCD_Datos
+	MOVLW 0x64
+	CALL LCD_Datos
+	MOVLW 0x6F
 	CALL LCD_Datos
 	GOTO Comportamiento
+
+PrintOpciones
+	MOVLW 0x01
+	call LCD_Comando
+	MOVLW 0x02
+	call LCD_Comando
 
 PrintContrasenaIncorrecta
 	MOVLW 0x01
