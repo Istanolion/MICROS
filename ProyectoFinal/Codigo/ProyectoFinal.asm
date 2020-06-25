@@ -74,8 +74,8 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF ADCON1			; ADCON1 <- (W) 
 	MOVLW H'3F'				; W <- h'3F'
 	MOVWF TRISA 			; TRISA <- (W) configuramos PORTA como entrada
-	MOVLW H'FF'				; W <- h'FF' B'11111111' We need inputs for the dipswitch
-	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como entrada
+	MOVLW H'F0'				; W <- h'F0' B'11110000' We need inputs and outputs. high is input_low is output
+	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como Entrada/Salida
 	MOVLW H'85'				; W <- h'F8' B'10000101' WE NEEED FOUR OUTPUTS
 	MOVWF TRISC				; TRISC <- (W) configuramos PORTC como salida
 	MOVLW H'00'				; W <- h'00'
@@ -156,6 +156,102 @@ LCD_Letra:
 	CALL LCD_Datos
 	RETURN
 
+
+;===========================================================================
+Digito:
+;	SWAPF RegAux
+;	ADDWF RegAux,F
+;	CALL LCD_Digito
+;	DECFSZ RegAux2
+	GOTO ReadKeypad
+	CALL Retardo_1_Segundo
+	RETURN
+Letra:
+;	SWAPF RegAux
+;	ADDWF RegAux,F
+;	CALL LCD_Letra
+;	DECFSZ RegAux2
+	GOTO ReadKeypad
+	CALL Retardo_1_Segundo
+	RETURN
+
+;===========================================================================
+ReadKeypad:
+	BCF PORTB,3
+	BSF PORTB,0 	;ROW 7-A
+	MOVLW 0x07
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
+	GOTO Digito		;NUMBER 7
+	
+	MOVLW 0x08
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
+	GOTO Digito		;NUMBER 8
+
+	MOVLW 0x09
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
+	GOTO Digito		;NUMBER 9
+	
+	MOVLW 0x0A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
+	GOTO Letra		;NUMBER A
+
+	BCF PORTB,0
+	BSF PORTB,1 	;ROW 4,5,6,B
+	MOVLW 0x04
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
+	GOTO Digito		;NUMBER 7
+	
+	MOVLW 0x05
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
+	GOTO Digito		;NUMBER 8
+
+	MOVLW 0x06
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
+	GOTO Digito		;NUMBER 9
+	
+	MOVLW 0x0B
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
+	GOTO Letra		;NUMBER A
+	
+	BCF PORTB,1
+	BSF PORTB,2 	;ROW 4,5,6,B
+	MOVLW 0x01
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
+	GOTO Digito		;NUMBER 7
+	
+	MOVLW 0x02
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
+	GOTO Digito		;NUMBER 8
+
+	MOVLW 0x03
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
+	GOTO Digito		;NUMBER 9
+	
+	MOVLW 0x0C
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
+	GOTO Letra		;NUMBER A
+
+	BCF PORTB,2
+	BSF PORTB,3 	;ROW 4,5,6,B
+	MOVLW 0x0F
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
+	GOTO Letra		;NUMBER 7
+	
+	MOVLW 0x00
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
+	GOTO Digito		;NUMBER 8
+
+	MOVLW 0x0E
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
+	GOTO Letra		;NUMBER 9
+	
+	MOVLW 0x0D
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
+	GOTO Letra		;NUMBER A
+
+	GOTO ReadKeypad
+
+
 ; =============================================================================
 
 PrintCero
@@ -200,6 +296,41 @@ PrintSiete
 
 PrintOcho
 	MOVLW 0x38
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintNueve
+	MOVLW 0x38
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintA
+	MOVLW 0x41
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintB
+	MOVLW 0x42
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintC
+	MOVLW 0x43
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintD
+	MOVLW 0x44
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintE
+	MOVLW 0x45
+	CALL LCD_Datos
+	GOTO Comportamiento
+
+PrintF
+	MOVLW 0x46
 	CALL LCD_Datos
 	GOTO Comportamiento
 
