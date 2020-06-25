@@ -89,7 +89,8 @@ loop:
 	MOVF PORTB,W			; W <- (PORTB) leer entrada en PORTA
 	ANDLW H'01'				; Se realiza un AND logico con H'01' (Mascara de bits)
 	ADDWF PCL,F				; Se agrega al PC el valor resultante de aplicar la mascara
-;	GOTO ProgramarContraseña
+
+;	GOTO ProgramarContraseña ;No es recomendable ponerla de momento hasta que todo funcione
 ;	GOTO DesbloquearPuerta
 
 ; ==============================================================================
@@ -226,6 +227,36 @@ PrintOpciones
 	call LCD_Comando
 	MOVLW 0x02
 	call LCD_Comando
+	MOVLW 0x43
+	CALL LCD_Datos
+	MOVLW 0x6F
+	CALL LCD_Datos
+	MOVLW 0x6E
+	CALL LCD_Datos
+	MOVLW 0x74
+	CALL LCD_Datos
+	MOVLW 0x72
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	MOVLW 0x76
+	CALL LCD_Datos
+	MOVLW 0x65
+	CALL LCD_Datos
+	MOVLW b'11110001'
+	CALL LCD_Datos
+	MOVLW 0x61
+	CALL LCD_Datos
+	GOTO Comportamiento
+;ascii
+;==========
+;ñ (1010 0100)
+;Ñ (1010 0101)
+;
+;LCD HD44780U
+;==========
+;ñ (1111 0001)
+;Ñ (1101 0001)
 
 PrintContrasenaIncorrecta
 	MOVLW 0x01
