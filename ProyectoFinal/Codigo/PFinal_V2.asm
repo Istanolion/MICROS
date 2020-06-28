@@ -74,14 +74,23 @@ inicio 						; Etiqueta de inicio de programa
 
 
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
+	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
 
-;	MOVLW 0x01
-;	call LCD_Comando
-;	MOVLW 0x02
-;	call LCD_Comando
 ;===============================================================================
 Comportamiento:
 
+	CALL PrintMensajeBienvenida
+LimpiarPantalla:
+	MOVLW H'01'
+	call LCD_Comando
+	MOVLW H'02'
+	call LCD_Comando
+Ingresar:
+	call PrintIngresarContrasena
+SegundaLinea:
+	MOVLW 0xC0	; Dir that starts line 2
+	CALL LCD_Comando
+Leer:
 	call ReadKeypad
 	GOTO Comportamiento
 
@@ -149,6 +158,33 @@ LCD_Letra:
 	CALL LCD_Datos
 	RETURN
 
+
+;===========================================================================
+createSymbols:
+	MOVLW 0X40
+	CALL LCD_Comando
+	MOVLW 0x00
+	CALL LCD_Datos	
+	MOVLW 0x0E
+	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos
+	MOVLW 0x16
+	CALL LCD_Datos
+	MOVLW 0x19
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+	MOVLW 0x11
+	CALL LCD_Datos
+;ALL FOR THE Ñ
+
+;REDIRECT TO DDRAM
+	MOVLW H'80'         				
+	CALL LCD_Comando
+	RETURN				
 
 ;===========================================================================
 Digito:
@@ -250,87 +286,87 @@ ReadKeypad:
 PrintCero
 	MOVLW 0x30
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintUno
 	MOVLW 0x31
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintDos
 	MOVLW 0x32
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintTres
 	MOVLW 0x33
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintCuatro
 	MOVLW 0x34
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintCinco
 	MOVLW 0x35
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintSeis
 	MOVLW 0x36
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintSiete
 	MOVLW 0x37
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintOcho
 	MOVLW 0x38
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintNueve
 	MOVLW 0x38
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintA
 	MOVLW 0x41
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintB
 	MOVLW 0x42
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintC
 	MOVLW 0x43
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintD
 	MOVLW 0x44
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintE
 	MOVLW 0x45
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintF
 	MOVLW 0x46
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintAsterisco
 	MOVLW 0x2A
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintMensajeBienvenida
 	MOVLW 0x42
@@ -353,13 +389,9 @@ PrintMensajeBienvenida
 	CALL LCD_Datos
 	MOVLW 0x6F
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO LimpiarPantalla
 
 PrintIngresarContrasena
-	MOVLW 0x01
-	call LCD_Comando
-	MOVLW 0x02
-	call LCD_Comando
 	MOVLW 0x43
 	CALL LCD_Datos
 	MOVLW 0x6F
@@ -372,24 +404,15 @@ PrintIngresarContrasena
 	CALL LCD_Datos
 	MOVLW 0x61
 	CALL LCD_Datos
-	MOVLW 0x76
+	MOVLW 0x73
 	CALL LCD_Datos
 	MOVLW 0x65
 	CALL LCD_Datos
-	MOVLW b'11110001'
-	CALL LCD_Datos
+	MOVLW 0x00
+	CALL LCD_Datos ; ñ creada en la CGRAM
 	MOVLW 0x61
 	CALL LCD_Datos
-	GOTO Comportamiento
-;ascii
-;==========
-;n (1010 0100)
-;N (1010 0101)
-;
-;LCD HD44780U
-;==========
-;n (1111 0001)
-;N (1101 0001)
+	GOTO SegundaLinea
 
 PrintContrasenaIncorrecta
 	MOVLW 0x01
@@ -418,7 +441,7 @@ PrintContrasenaIncorrecta
 	CALL LCD_Datos
 	MOVLW 0x2A
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 PrintAbierto
 	MOVLW 0x01
@@ -439,7 +462,7 @@ PrintAbierto
 	CALL LCD_Datos
 	MOVLW 0x6F
 	CALL LCD_Datos
-	GOTO Comportamiento
+	GOTO Leer
 
 
 ; =============================================================================
