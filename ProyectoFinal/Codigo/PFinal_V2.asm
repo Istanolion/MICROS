@@ -94,8 +94,8 @@ inicio 						; Etiqueta de inicio de programa
 	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
 
 ;===============================================================================
-Comportamiento:
 
+Comportamiento:
 	CALL PrintMensajeBienvenida
 LimpiarPantalla:
 	MOVLW H'01'
