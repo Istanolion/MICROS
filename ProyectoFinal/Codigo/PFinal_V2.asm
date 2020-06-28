@@ -72,6 +72,23 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF TRISD				; TRISD <- (W) configuramos PORTD como salida
  	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 
+	MOVLW H'01'				; W <- h'01'
+	MOVWF Contrasena1		; Contrasena1 <- (W) 
+	MOVLW H'01'				; W <- h'02'
+	MOVWF Contrasena2		; Contrasena2 <- (W) 
+	MOVLW H'01'				; W <- h'03'
+	MOVWF Contrasena3		; Contrasena3 <- (W) 
+	MOVLW H'01'				; W <- h'04'
+	MOVWF Contrasena4		; Contrasena4 <- (W) 
+	MOVLW H'01'				; W <- h'05'
+	MOVWF Contrasena5		; Contrasena5 <- (W) 
+	MOVLW H'01'				; W <- h'06'
+	MOVWF Contrasena6		; Contrasena6 <- (W) 
+	MOVLW H'01'				; W <- h'07'
+	MOVWF Contrasena7		; Contrasena7 <- (W) 
+	MOVLW H'01'				; W <- h'08'
+	MOVWF Contrasena8		; Contrasena8 <- (W) 
+
 
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
 	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
@@ -92,7 +109,7 @@ SegundaLinea:
 	CALL LCD_Comando
 Leer:
 	call ReadKeypad
-	GOTO Comportamiento
+	GOTO Leer
 
 ;===============================================================================
 ;loop:
