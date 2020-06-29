@@ -204,23 +204,23 @@ createSymbols:
 	RETURN				
 
 ;===========================================================================
+
 Digito:
-
 	CALL LCD_Digito
-
 	GOTO ReadKeypad
 	CALL Retardo_1_Segundo
 	RETURN
+
 Letra:
-
 	CALL LCD_Letra
-
 	GOTO ReadKeypad
 	CALL Retardo_1_Segundo
 	RETURN
 
 ;===========================================================================
+
 ReadKeypad:
+
 	BCF PORTB,3
 	BSF PORTB,0 	;ROW 7-A
 	MOVLW 0x07
