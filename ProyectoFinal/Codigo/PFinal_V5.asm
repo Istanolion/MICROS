@@ -553,7 +553,7 @@ PrintContrasenaIncorrecta
 	call Retardo_1_Segundo
 	MOVLW b'00000000'
 
-	GOTO Leer
+	GOTO Comportamiento
 
 PrintAbierto
 	MOVLW 0x01
