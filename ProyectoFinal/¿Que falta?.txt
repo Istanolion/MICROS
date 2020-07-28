@@ -1,4 +1,5 @@
 -Corregir comprobacion de contraseña
 -Corregir ingreso de datos
+-Agregar interrupcion
 -Corregir reporte
 -Grabar video
