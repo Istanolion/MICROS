@@ -271,6 +271,8 @@ CheckPasswordComplete:
 	GOTO CheckPassword
 	GOTO Leer
 CheckPassword:
+	BCF T1CON,TMR1ON
+	CALL Renicia_Timer1
 	MOVF ContrasenaIngresada1,W
 	XORWF Contrasena1,W
 	BTFSS STATUS,Z
@@ -820,7 +822,7 @@ ReiniciarSys:
 	CLRF ContrasenaIngresada7 
 	CLRF ContrasenaIngresada8 
 	CLRF RegContrasenaCount
-	RESET
+	GOTO 0
 Renicia_Timer1:
 	MOVLW 0x0B
 	MOVWF TMR1H	
