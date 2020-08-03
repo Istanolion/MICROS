@@ -27,6 +27,7 @@ cte12 equ 61h
 ;REG AUX CONVERSION DIGITAL-LCD
 RegAux equ 0x20		;reg de la conversion a/d
 RegFlag equ 0x24	;registro con la bandera de incremento/decremento
+ContadorH equ 0x33
 ContadorL equ 0x34	;cuantas veces se ha desbordado timer1
 STATUSAUX equ 0x35	;guardar el status mientras la interrupcion
 WAUX equ 0x36		;guardar w mientras la interrupcion
@@ -53,7 +54,8 @@ ContrasenaIngresada6 equ 0x44	;guardar 6 digito de la contrasena
 ContrasenaIngresada7 equ 0x45	;guardar 7 digito de la contrasena
 ContrasenaIngresada8 equ 0x46	;guardar 8 digito de la contrasena
 
-IngresadoAux equ 0x47 
+
+RegContrasenaCount equ 0x47 ;nos dice en que slot vamos de contrasena
 SaltoAuxiliar equ 0x48
 
 ;===============================================================================
@@ -61,16 +63,22 @@ SaltoAuxiliar equ 0x48
 	org 0					; vector de reset
 	goto inicio				; ve al inicio del programa
 
-;	ORG 4
-;	GOTO Interrupciones		;Direccion de las interrupciones
+	ORG 4
+	GOTO Interrupciones		;Direccion de las interrupciones
  	org 5
 inicio 						; Etiqueta de inicio de programa
+	CLRF INTCON
+	CLRF PIR1
+	CLRF ContadorH			
+	CLRF ContadorL
 	CLRF PORTA				; Limpiamos PORTA
 	CLRF PORTB				; Limpiamos PORTB
 	CLRF PORTC				; Limpiamos PORTC
 	CLRF PORTD				; Limpiamos PORTD
 	BSF STATUS,5			; Ponemos un 1 en el bit 5 de STATUS (RP0)
  	BCF STATUS,6 			; Ponemos un 0 en el bit 6 de STATUS (RP1) para cambiar de banco 0 al 1
+	CLRF PIE1
+	BSF  PIE1,TMR1IE
 	MOVLW H'06'				; W <- h'06'
 	MOVWF ADCON1			; ADCON1 <- (W) desactivar convertidor
 	MOVLW H'00'				; W <- h'00' B'00000000'
@@ -81,8 +89,9 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF TRISC				; TRISC <- (W) configuramos PORTC como salida
 	MOVLW H'00'				; W <- h'00'
 	MOVWF TRISD				; TRISD <- (W) configuramos PORTD como salida
- 	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
 
+ 	BCF STATUS,5			; regresar al banco 0 poniendo el bit 5 de STATUS (RP0) en 0
+	CALL Renicia_Timer1
 	MOVLW H'01'				; W <- h'01'
 	MOVWF Contrasena1		; Contrasena1 <- (W) 
 	MOVLW H'02'				; W <- h'02'
@@ -91,16 +100,22 @@ inicio 						; Etiqueta de inicio de programa
 	MOVWF Contrasena3		; Contrasena3 <- (W) 
 	MOVLW H'04'				; W <- h'04'
 	MOVWF Contrasena4		; Contrasena4 <- (W) 
-
-
-	MOVLW H'02'					; W <- h'01'
-	MOVWF ContrasenaIngresada1	; ContrasenaIngresada1 <- (W) 
-	MOVLW H'02'					; W <- h'02'
-	MOVWF ContrasenaIngresada2	; ContrasenaIngresada2 <- (W) 
-	MOVLW H'03'					; W <- h'03'
-	MOVWF ContrasenaIngresada3	; ContrasenaIngresada3 <- (W) 
-	MOVLW H'04'					; W <- h'04'
-	MOVWF ContrasenaIngresada4	; ContrasenaIngresada4 <- (W) 
+	MOVLW H'05'				; W <- h'05'
+	MOVWF Contrasena5		; Contrasena5 <- (W) 
+	MOVLW H'06'				; W <- h'06'
+	MOVWF Contrasena6		; Contrasena6 <- (W) 
+	MOVLW H'07'				; W <- h'07'
+	MOVWF Contrasena7		; Contrasena7 <- (W) 
+	MOVLW H'08'				; W <- h'08'
+	MOVWF Contrasena8		; Contrasena8 <- (W) 
+ 	
+	CALL Renicia_Timer1
+	CLRF PIR1
+	BSF INTCON,PEIE
+	BSF INTCON,GIE
+	MOVLW 0x30
+	MOVWF T1CON
+	CLRF RegContrasenaCount
 
 	MOVLW H'00'				; W <- h'00'
 	MOVWF SaltoAuxiliar		; SaltoAuxiliar <- (W) 
@@ -110,7 +125,7 @@ inicio 						; Etiqueta de inicio de programa
 	CALL createSymbols		; Llama la subrutina que crea guarda en CGRAM los caracteres nuevos
 
 ;===============================================================================
-
+	
 Comportamiento:
 	CALL PrintMensajeBienvenida
 LimpiarPantalla:
@@ -120,72 +135,19 @@ LimpiarPantalla:
 	call LCD_Comando
 Ingresar:
 	call PrintIngresarContrasena
+	BSF T1CON,TMR1ON
 SegundaLinea:
 	MOVLW 0xC0	; Dir that starts line 2
 	CALL LCD_Comando
 
-LoopAux:
-
-	GOTO ComprobarContrasena
-	GOTO LoopAux	
+	
 Leer:
-
-	MOVF SaltoAuxiliar,W 	; W <- (PORTA) leer entrada en PORTA
-	ANDLW H'07' 			; Se realiza un AND logico con H'07' (Mascara de bits)
-	ADDWF PCL,F 			; Se agrega al PC el valor resultante de aplicar la mascara
-	GOTO Leer1 				; 
-	GOTO Leer2 				; 
-	GOTO Leer3 				; 
-	GOTO Leer4 				;
-	GOTO LeerFinal			; 
-	GOTO Leer 				; Evitar problemas por ingresar valores incorrectos
-	GOTO Leer 				; Evitar problemas por ingresar valores incorrectos
-
-
-
-Leer1:
-	GOTO ReadKeypad
-	MOVLW IngresadoAux
-	MOVF ContrasenaIngresada1
-	INCF SaltoAuxiliar
-	MOVLW 0x01
-	call LCD_Comando
-	MOVLW 0x02
-	call LCD_Comando
-	GOTO Leer
+	call ReadKeypad
+	GOTO CheckPasswordComplete
 	
-Leer2:
-	GOTO ReadKeypad
-	MOVLW IngresadoAux
-	MOVF ContrasenaIngresada2
-	INCF SaltoAuxiliar
-	MOVLW 0x01
-	call LCD_Comando
-	MOVLW 0x02
-	call LCD_Comando
-	GOTO Leer
-	
-Leer3:
-	GOTO ReadKeypad
-	MOVLW IngresadoAux
-	MOVF ContrasenaIngresada3
-	INCF SaltoAuxiliar
-	GOTO Leer
-
-Leer4:
-	GOTO ReadKeypad
-	MOVLW IngresadoAux
-	MOVF ContrasenaIngresada4
-	INCF SaltoAuxiliar
 	GOTO Leer
 
 
-LeerFinal:
-	MOVLW 0x01
-	call LCD_Comando
-	MOVLW 0x02
-	call LCD_Comando
-	GOTO ComprobarContrasena
 
 ;===============================================================================
 ;loop:
@@ -282,45 +244,132 @@ createSymbols:
 ;===========================================================================
 
 Digito:
+	MOVWF RegAux
+	CALL Select_Contrasena_Slot
 	CALL LCD_Digito
-	goto Leer
-	;GOTO ReadKeypad
-	;CALL Retardo_1_Segundo
+	CALL Retardo_1_Segundo
+	INCF RegContrasenaCount,F
 	RETURN
 
 Letra:
+	MOVWF RegAux
+	CALL Select_Contrasena_Slot
 	CALL LCD_Letra
-	goto Leer
-	;GOTO ReadKeypad
-	;CALL Retardo_1_Segundo
+	CALL Retardo_1_Segundo
+	INCF RegContrasenaCount,F
 	RETURN
+;===========================================================================
+CheckPasswordComplete:
+	MOVF RegContrasenaCount,W
+	XORLW 0x08
+	BTFSC STATUS,Z
+	GOTO CheckPassword
+	GOTO Leer
+CheckPassword:
+	MOVF ContrasenaIngresada1,W
+	XORWF Contrasena1,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
 
+	MOVF ContrasenaIngresada2,W
+	XORWF Contrasena2,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada3,W
+	XORWF Contrasena3,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada4,W
+	XORWF Contrasena4,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada5,W
+	XORWF Contrasena5,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada6,W
+	XORWF Contrasena6,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada7,W
+	XORWF Contrasena7,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada8,W
+	XORWF Contrasena8,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	GOTO PrintAbierto
+;===========================================================================
+Select_Contrasena_Slot:
+	MOVF RegContrasenaCount,W
+	ADDWF PCL,F
+
+	GOTO GuardarC1			;SLOT 0
+	GOTO GuardarC2			;SLOT 1
+	GOTO GuardarC3			;SLOT 2
+	GOTO GuardarC4			;SLOT 3
+	GOTO GuardarC5			;SLOT 4
+	GOTO GuardarC6			;SLOT 5
+	GOTO GuardarC7			;SLOT 6
+	GOTO GuardarC8			;SLOT 7
+;===========================================================================
+GuardarC1:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada1
+	RETURN
+GuardarC2:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada2
+	RETURN
+GuardarC3:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada3
+	RETURN
+GuardarC4:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada4
+	RETURN
+GuardarC5:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada5
+	RETURN
+GuardarC6:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada6
+	RETURN
+GuardarC7:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada7
+	RETURN
+GuardarC8:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada8
+	RETURN
 ;===========================================================================
 
 ReadKeypad:
-
 	BCF PORTB,3
 	BSF PORTB,0 	;ROW 7-A
-	MOVLW 0x07
-	MOVWF IngresadoAux
 	MOVLW 0x07
 	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
 	GOTO Digito		;NUMBER 7
 	
 	MOVLW 0x08
-	MOVWF IngresadoAux
-	MOVLW 0x08
 	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
 	GOTO Digito		;NUMBER 8
 
 	MOVLW 0x09
-	MOVWF IngresadoAux
-	MOVLW 0x09
 	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
 	GOTO Digito		;NUMBER 9
 	
-	MOVLW 0x0A
-	MOVWF IngresadoAux
 	MOVLW 0x0A
 	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
 	GOTO Letra		;NUMBER A
@@ -328,82 +377,58 @@ ReadKeypad:
 	BCF PORTB,0
 	BSF PORTB,1 	;ROW 4,5,6,B
 	MOVLW 0x04
-	MOVWF IngresadoAux
-	MOVLW 0x04
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Digito		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 4
+	GOTO Digito		;NUMBER 4
 	
 	MOVLW 0x05
-	MOVWF IngresadoAux
-	MOVLW 0x05
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 5
+	GOTO Digito		;NUMBER 5
 
 	MOVLW 0x06
-	MOVWF IngresadoAux
-	MOVLW 0x06
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Digito		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 6
+	GOTO Digito		;NUMBER 6
 	
 	MOVLW 0x0B
-	MOVWF IngresadoAux
-	MOVLW 0x0B
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS B
+	GOTO Letra		;NUMBER B
 	
 	BCF PORTB,1
-	BSF PORTB,2 	;ROW 4,5,6,B
+	BSF PORTB,2 	;ROW 1,2,3,C
 	MOVLW 0x01
-	MOVWF IngresadoAux
-	MOVLW 0x01
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Digito		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 1
+	GOTO Digito		;NUMBER 1
 	
 	MOVLW 0x02
-	MOVWF IngresadoAux
-	MOVLW 0x02
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 2
+	GOTO Digito		;NUMBER 2
 
 	MOVLW 0x03
-	MOVWF IngresadoAux
-	MOVLW 0x03
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Digito		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 3
+	GOTO Digito		;NUMBER 3
 	
 	MOVLW 0x0C
-	MOVWF IngresadoAux
-	MOVLW 0x0C
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS C
+	GOTO Letra		;NUMBER C
 
 	BCF PORTB,2
-	BSF PORTB,3 	;ROW 4,5,6,B
+	BSF PORTB,3 	;ROW F,0,E,D
 	MOVLW 0x0F
-	MOVWF IngresadoAux
-	MOVLW 0x0F
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Letra		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS F
+	GOTO Letra		;NUMBER F
 	
 	MOVLW 0x00
-	MOVWF IngresadoAux
-	MOVLW 0x00
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 0
+	GOTO Digito		;NUMBER 0
 
 	MOVLW 0x0E
-	MOVWF IngresadoAux
-	MOVLW 0x0E
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Letra		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS E
+	GOTO Letra		;NUMBER E
 	
 	MOVLW 0x0D
-	MOVWF IngresadoAux
-	MOVLW 0x0D
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS D
+	GOTO Letra		;NUMBER D
 
-	GOTO Leer
+	GOTO ReadKeypad
 
 
 ; =============================================================================
@@ -540,6 +565,7 @@ PrintIngresarContrasena
 	GOTO SegundaLinea
 
 PrintContrasenaIncorrecta
+	CLRF RegContrasenaCount
 	MOVLW 0x01
 	call LCD_Comando
 	MOVLW 0x02
@@ -597,7 +623,7 @@ PrintContrasenaIncorrecta
 	MOVLW 0x02
 	call LCD_Comando
 
-	GOTO Comportamiento
+	GOTO Ingresar
 
 PrintAbierto
 	MOVLW 0x01
@@ -620,33 +646,6 @@ PrintAbierto
 	CALL LCD_Datos
 	GOTO Abrir
 
-
-; =============================================================================
-
-ComprobarContrasena
-
-	MOVF ContrasenaIngresada1,W			; Si tiene el valor igual a la contrasena original
-	SUBWF Contrasena1,W					; Resta de comprobacion
-	BTFSS STATUS, Z						; Si no cumple con la condicion
-	GOTO PrintContrasenaIncorrecta		; Manda el mensaje de contrasena ingresada incorrecta
-
-	MOVF ContrasenaIngresada2,W			; Si tiene el valor igual a la contrasena original
-	SUBWF Contrasena2,W					; Resta de comprobacion
-	BTFSS STATUS, Z						; Si no cumple con la condicion
-	GOTO PrintContrasenaIncorrecta		; Manda el mensaje de contrasena ingresada incorrecta
-
-	MOVF ContrasenaIngresada3,W			; Si tiene el valor igual a la contrasena original
-	SUBWF Contrasena3,W					; Resta de comprobacion
-	BTFSS STATUS, Z						; Si no cumple con la condicion
-	GOTO PrintContrasenaIncorrecta		; Manda el mensaje de contrasena ingresada incorrecta
-
-	MOVF ContrasenaIngresada4,W			; Si tiene el valor igual a la contrasena original
-	SUBWF Contrasena4,W					; Resta de comprobacion
-	BTFSS STATUS, Z						; Si no cumple con la condicion
-	GOTO PrintContrasenaIncorrecta		; Manda el mensaje de contrasena ingresada incorrecta
-
-	GOTO PrintAbierto					; Si todas las contrasenas son correctas manda el mensaje de abierto
-	
 ; =============================================================================
 
 Abrir
@@ -677,7 +676,7 @@ Abrir
 	call LCD_Comando
 	call Retardo_1_Segundo
 	call Retardo_1_Segundo
-
+	
 	GOTO $
 
 
@@ -767,6 +766,62 @@ Loop
 
 ;===========================================================================
 
-;Interrupciones
+Interrupciones:
+	MOVWF WAUX			;GUARDAMOS LA QUE TENIA W
+	SWAPF STATUS,W		;W GUARDA TODO EL STATUS
+	MOVWF STATUSAUX
+	CLRF STATUS
+	BTFSS PIR1,TMR1IF	;CHECAMOS SI LA INTERRUPCION FUE DADA POR EL DESBORDE DEL TIMER1
+	GOTO nTimer			;nos salimos en caso de que no sea
+	INCFSZ ContadorL,f	;incrementamos la parte baja de nuestro contador aux
+	GOTO only_low		;si el incremento no es igual a cero
+	INCF ContadorH,f	;si el incremento es igual a cero
+	GOTO Out
+;debemos checar el valor de contadoH
+only_low:
+	MOVF ContadorH,w	;w tiene el valor de ContadorH
+	XORLW 0x07			;REALIZAMOS UN XOR CON EL VALOR 0X0
+	BTFSC STATUS,Z		;CHECAMOS SI EL XOR DA 0 (IE SON NUMEROS IDENTICOS)
+	GOTO CHECK_CL
+Out: CALL Renicia_Timer1	;reiniciamos el timer1 a su valor predeterminado y bajamos la bandera de desborde
+nTimer:
+	SWAPF STATUSAUX,W
+	MOVWF STATUS
+	SWAPF WAUX,F
+	SWAPF WAUX,W
+	BCF PIR1,TMR1IF	;REINICIAMOS LA BANDERA DE DESBORDE DEL TIMER1	
+	RETFIE
+CHECK_CL:
+	MOVF ContadorL,w	;w tiene le valor del ContadorL
+	XORLW 0x08			; XOR CON UN VALOR DETERMINADO 
+	BTFSC STATUS,Z		;CHECAMOS SI LA XOR DIO 0
+	GOTO ReiniciarSys	;se llego a los 3 minutos
+	GOTO Out
+ReiniciarSys:
+	CALL Renicia_Timer1
+	CLRF STATUS
+	CLRF WAUX
+	BCF PIR1,TMR1IF
+	MOVLW H'01'
+	call LCD_Comando
+	MOVLW H'02'
+	call LCD_Comando
+	CLRF ContrasenaIngresada1 
+	CLRF ContrasenaIngresada2 
+	CLRF ContrasenaIngresada3 
+	CLRF ContrasenaIngresada4 
+	CLRF ContrasenaIngresada5 
+	CLRF ContrasenaIngresada6 
+	CLRF ContrasenaIngresada7 
+	CLRF ContrasenaIngresada8 
+	CLRF RegContrasenaCount
+	RESET
+Renicia_Timer1:
+	MOVLW 0x0B
+	MOVWF TMR1H	
+	MOVLW 0xD2
+	MOVWF TMR1L	
+;AQUI SE REGRESO A UN VALOR INICIAL EL TIMER1 PARA QUE EL DESBORDE OCURRA CADA .1SEG 
 
+	RETURN
 	END

@@ -1,4 +1,4 @@
--Corregir ingreso de datos
+
 -Agregar interrupcion
 -Acompletar reporte
 -Grabar video
