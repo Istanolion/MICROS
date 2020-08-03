@@ -68,6 +68,9 @@ SaltoAuxiliar equ 0x48
  	org 5
 inicio 						; Etiqueta de inicio de programa
 	CLRF INTCON
+	BSF INTCON,GIE
+	BSF INTCON,PEIE
+	BSF INTCON,T0IE
 	CLRF PIR1
 	CLRF ContadorH			
 	CLRF ContadorL
@@ -111,8 +114,7 @@ inicio 						; Etiqueta de inicio de programa
  	
 	CALL Renicia_Timer1
 	CLRF PIR1
-	BSF INTCON,PEIE
-	BSF INTCON,GIE
+	
 	MOVLW 0x30
 	MOVWF T1CON
 	CLRF RegContrasenaCount
@@ -127,6 +129,7 @@ inicio 						; Etiqueta de inicio de programa
 ;===============================================================================
 	
 Comportamiento:
+
 	CALL PrintMensajeBienvenida
 LimpiarPantalla:
 	MOVLW H'01'
@@ -134,8 +137,9 @@ LimpiarPantalla:
 	MOVLW H'02'
 	call LCD_Comando
 Ingresar:
-	call PrintIngresarContrasena
 	BSF T1CON,TMR1ON
+	call PrintIngresarContrasena
+	
 SegundaLinea:
 	MOVLW 0xC0	; Dir that starts line 2
 	CALL LCD_Comando
@@ -202,6 +206,7 @@ LCD_Datos
 	call Retardo_200_Microsegundos     	; TIEMPO DE ESPERA
 	BCF PORTC, 2    					; ENABLE=0    
 	call Retardo_400_Microsegundos     	; TIEMPO DE ESPERA
+
 	return     
 	
 LCD_Digito:
