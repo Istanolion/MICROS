@@ -21,7 +21,7 @@ cte10 equ 20h
 cte11 equ 35h
 cte12 equ 61h
 ;REG AUX CONVERSION DIGITAL-LCD
-RegAux equ 0x20		;reg de la conversion a/d
+RegAux equ 0x20		;reg para guardar el digito ingresado momentaneamente
 RegFlag equ 0x24	;registro con la bandera de incremento/decremento
 ContadorL equ 0x34	;cuantas veces se ha desbordado timer1
 STATUSAUX equ 0x35	;guardar el status mientras la interrupcion
@@ -35,6 +35,8 @@ Contrasena5 equ 0x3B	;guardar 5 digito de la contrasena
 Contrasena6 equ 0x3C	;guardar 6 digito de la contrasena
 Contrasena7 equ 0x3D	;guardar 7 digito de la contrasena
 Contrasena8 equ 0x3E	;guardar 8 digito de la contrasena
+
+RegContrasenaCount equ 0x47 ;nos dice en que slot vamos de contrasena
 
 ContrasenaIngresada1 equ 0x3F	;guardar 1 digito de la contrasena
 ContrasenaIngresada2 equ 0x40	;guardar 2 digito de la contrasena
@@ -62,8 +64,8 @@ inicio 						; Etiqueta de inicio de programa
  	BCF STATUS,6 			; Ponemos un 0 en el bit 6 de STATUS (RP1) para cambiar de banco 0 al 1
 	MOVLW H'06'				; W <- h'06'
 	MOVWF ADCON1			; ADCON1 <- (W) desactivar convertidor
-	MOVLW H'07'				; W <- h'07' B'00000111'
-	MOVWF TRISA 			; TRISA <- (W) configuramos PORTA como entrada
+	MOVLW H'00'				; W <- h'00' B'00000000'
+	MOVWF TRISA 			; TRISA <- (W) configuramos PORTA como SALIDA
 	MOVLW H'F0'				; W <- h'F0' B'11110000' We need inputs and outputs. high is input_low is output
 	MOVWF TRISB				; TRISB <- (W) configuramos PORTB como entrada
 	MOVLW H'F8'				; W <- h'F8' B'11111000' WE NEEED THRRE OUTPUTS
@@ -74,20 +76,22 @@ inicio 						; Etiqueta de inicio de programa
 
 	MOVLW H'01'				; W <- h'01'
 	MOVWF Contrasena1		; Contrasena1 <- (W) 
-	MOVLW H'01'				; W <- h'02'
+	MOVLW H'02'				; W <- h'02'
 	MOVWF Contrasena2		; Contrasena2 <- (W) 
-	MOVLW H'01'				; W <- h'03'
+	MOVLW H'03'				; W <- h'03'
 	MOVWF Contrasena3		; Contrasena3 <- (W) 
-	MOVLW H'01'				; W <- h'04'
+	MOVLW H'04'				; W <- h'04'
 	MOVWF Contrasena4		; Contrasena4 <- (W) 
-	MOVLW H'01'				; W <- h'05'
+	MOVLW H'05'				; W <- h'05'
 	MOVWF Contrasena5		; Contrasena5 <- (W) 
-	MOVLW H'01'				; W <- h'06'
+	MOVLW H'06'				; W <- h'06'
 	MOVWF Contrasena6		; Contrasena6 <- (W) 
-	MOVLW H'01'				; W <- h'07'
+	MOVLW H'07'				; W <- h'07'
 	MOVWF Contrasena7		; Contrasena7 <- (W) 
-	MOVLW H'01'				; W <- h'08'
+	MOVLW H'08'				; W <- h'08'
 	MOVWF Contrasena8		; Contrasena8 <- (W) 
+
+	CLRF RegContrasenaCount
 
 
 	CALL Inicia_LCD			; Se llama a la subrutina que inicializa el LCD
@@ -109,6 +113,8 @@ SegundaLinea:
 	CALL LCD_Comando
 Leer:
 	call ReadKeypad
+	CALL CheckPasswordComplete
+	
 	GOTO Leer
 
 ;===============================================================================
@@ -205,22 +211,114 @@ createSymbols:
 
 ;===========================================================================
 Digito:
-;	SWAPF RegAux
-;	ADDWF RegAux,F
+	MOVWF RegAux
+	CALL Select_Contrasena_Slot
 	CALL LCD_Digito
-;	DECFSZ RegAux2
-	GOTO ReadKeypad
 	CALL Retardo_1_Segundo
+	INCF RegContrasenaCount,F
 	RETURN
 Letra:
-;	SWAPF RegAux
-;	ADDWF RegAux,F
+	MOVWF RegAux
+	CALL Select_Contrasena_Slot
 	CALL LCD_Letra
-;	DECFSZ RegAux2
-	GOTO ReadKeypad
 	CALL Retardo_1_Segundo
+	INCF RegContrasenaCount,F
 	RETURN
+;===========================================================================
+CheckPasswordComplete:
+	MOVF RegContrasenaCount,W
+	XORLW 0x08
+	BTFSC STATUS,Z
+	GOTO CheckPassword
+	RETURN
+CheckPassword:
+	MOVF ContrasenaIngresada1,W
+	XORWF Contrasena1,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
 
+	MOVF ContrasenaIngresada2,W
+	XORWF Contrasena2,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada3,W
+	XORWF Contrasena3,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada4,W
+	XORWF Contrasena4,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada5,W
+	XORWF Contrasena5,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada6,W
+	XORWF Contrasena6,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada7,W
+	XORWF Contrasena7,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	MOVF ContrasenaIngresada8,W
+	XORWF Contrasena8,W
+	BTFSS STATUS,Z
+	GOTO PrintContrasenaIncorrecta
+
+	GOTO PrintAbierto
+;===========================================================================
+Select_Contrasena_Slot:
+	MOVF RegContrasenaCount,W
+	ADDWF PCL,F
+
+	GOTO GuardarC1			;SLOT 0
+	GOTO GuardarC2			;SLOT 1
+	GOTO GuardarC3			;SLOT 2
+	GOTO GuardarC4			;SLOT 3
+	GOTO GuardarC5			;SLOT 4
+	GOTO GuardarC6			;SLOT 5
+	GOTO GuardarC7			;SLOT 6
+	GOTO GuardarC8			;SLOT 7
+;===========================================================================
+GuardarC1:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada1
+	RETURN
+GuardarC2:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada2
+	RETURN
+GuardarC3:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada3
+	RETURN
+GuardarC4:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada4
+	RETURN
+GuardarC5:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada5
+	RETURN
+GuardarC6:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada6
+	RETURN
+GuardarC7:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada7
+	RETURN
+GuardarC8:
+	MOVF RegAux,w
+	MOVWF ContrasenaIngresada8
+	RETURN
 ;===========================================================================
 ReadKeypad:
 	BCF PORTB,3
@@ -244,56 +342,56 @@ ReadKeypad:
 	BCF PORTB,0
 	BSF PORTB,1 	;ROW 4,5,6,B
 	MOVLW 0x04
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Digito		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 4
+	GOTO Digito		;NUMBER 4
 	
 	MOVLW 0x05
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 5
+	GOTO Digito		;NUMBER 5
 
 	MOVLW 0x06
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Digito		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 6
+	GOTO Digito		;NUMBER 6
 	
 	MOVLW 0x0B
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS B
+	GOTO Letra		;NUMBER B
 	
 	BCF PORTB,1
-	BSF PORTB,2 	;ROW 4,5,6,B
+	BSF PORTB,2 	;ROW 1,2,3,C
 	MOVLW 0x01
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Digito		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 1
+	GOTO Digito		;NUMBER 1
 	
 	MOVLW 0x02
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 2
+	GOTO Digito		;NUMBER 2
 
 	MOVLW 0x03
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Digito		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 3
+	GOTO Digito		;NUMBER 3
 	
 	MOVLW 0x0C
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS C
+	GOTO Letra		;NUMBER C
 
 	BCF PORTB,2
-	BSF PORTB,3 	;ROW 4,5,6,B
+	BSF PORTB,3 	;ROW F,0,E,D
 	MOVLW 0x0F
-	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS 7
-	GOTO Letra		;NUMBER 7
+	BTFSC PORTB,4   ;IF PORTB,4=1 THEN THE NUMBER IS F
+	GOTO Letra		;NUMBER F
 	
 	MOVLW 0x00
-	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 8
-	GOTO Digito		;NUMBER 8
+	BTFSC PORTB,5   ;IF PORTB,5=1 THEN THE NUMBER IS 0
+	GOTO Digito		;NUMBER 0
 
 	MOVLW 0x0E
-	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS 9
-	GOTO Letra		;NUMBER 9
+	BTFSC PORTB,6   ;IF PORTB,6=1 THEN THE NUMBER IS E
+	GOTO Letra		;NUMBER E
 	
 	MOVLW 0x0D
-	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS A
-	GOTO Letra		;NUMBER A
+	BTFSC PORTB,7   ;IF PORTB,7=1 THEN THE NUMBER IS D
+	GOTO Letra		;NUMBER D
 
 	GOTO ReadKeypad
 
@@ -458,7 +556,7 @@ PrintContrasenaIncorrecta
 	CALL LCD_Datos
 	MOVLW 0x2A
 	CALL LCD_Datos
-	GOTO Leer
+	RETURN
 
 PrintAbierto
 	MOVLW 0x01
@@ -479,7 +577,7 @@ PrintAbierto
 	CALL LCD_Datos
 	MOVLW 0x6F
 	CALL LCD_Datos
-	GOTO Leer
+	RETURN
 
 
 ; =============================================================================
